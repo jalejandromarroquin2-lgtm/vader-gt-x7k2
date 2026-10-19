@@ -1,0 +1,1430 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Modulador Vader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Una sola columna; todo lo que se toca seguido vive abajo, al alcance del pulgar */
+:root{
+  --bg:#0b0b0d; --panel:#141317; --panel2:#1b1a1f; --line:#2a2830; --fg:#ece9f1; --mute:#8f8a98;
+  --red:#e0142b; --red-dim:#4d0b14; --ok:#3ad07a; --blue:#3d8bff;
+  --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --dock:136px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--fg)}
+body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+.wrap{max-width:560px;margin:0 auto;padding-block:14px calc(var(--dock) + 28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+body.nodock .wrap{padding-bottom:40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.06em;text-transform:uppercase;margin:0;line-height:1}
+h1 b{color:var(--red)}
+.lat{font-family:var(--mono);font-size:10px;color:var(--mute);text-align:right;white-space:pre-line}
+.top{display:flex;gap:12px;align-items:center}
+#btn{flex:0 0 auto;width:96px;height:96px;border-radius:50%;border:2px solid var(--line);background:radial-gradient(circle at 50% 40%,#1d1b21,#0d0c0f);
+  color:var(--fg);font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;line-height:1.05;padding:6px}
+#btn.on{border-color:var(--red);color:#fff;box-shadow:0 0 28px 2px rgba(224,20,43,.45)}
+.topinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+#status{font-family:var(--mono);font-size:12px;color:var(--mute);min-height:1.4em}
+.meter{position:relative;height:12px;background:#08080a;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+#lvl{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#6b0c17,var(--red));transition:width .05s linear}
+#thrMark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--fg);opacity:.7}
+.gateLed{font-family:var(--mono);font-size:11px;color:var(--mute);display:flex;justify-content:space-between}
+.gateLed span.on{color:var(--ok)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px}
+h2{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin:0;color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:600 14px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer;min-height:42px}
+.chip.sel{border-color:var(--red);background:var(--red-dim)}
+.big{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;text-align:left;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;
+  padding:10px 12px;min-height:58px;cursor:pointer;font:600 16px/1.2 system-ui,-apple-system,sans-serif;width:100%}
+.big small{font:400 12px/1.2 var(--mono);color:var(--mute)}
+.big:active{transform:scale(.98)}
+.big.on{border-color:var(--red);background:var(--red-dim)}
+.big.playing{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.big.c{align-items:center;text-align:center;font-family:var(--display);font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+.row label{font-size:14px}
+.row output{font-family:var(--mono);font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
+.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--red);height:28px}
+.check{display:flex;gap:10px;align-items:center;font-size:14px;min-height:40px}
+.check input{width:22px;height:22px;accent-color:var(--red);flex:0 0 auto}
+.help{font-size:13px;color:var(--mute);margin:0}
+.code{font-family:var(--mono);font-size:40px;font-weight:600;letter-spacing:.2em;text-align:center}
+.codeIn input{width:100%;font-family:var(--mono);font-size:26px;letter-spacing:.3em;text-align:center;padding:10px;background:#08080a;color:var(--fg);border:1px solid var(--line);border-radius:6px}
+select.sel{grid-column:1/-1;width:100%;padding:10px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;font-size:14px}
+details{font-size:14px;color:var(--mute)}
+details summary{cursor:pointer;color:var(--fg);font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;min-height:36px;display:flex;align-items:center}
+details ul{padding-left:18px;margin:6px 0 0;display:flex;flex-direction:column;gap:6px}
+.tab{display:none;flex-direction:column;gap:14px}
+.tab.show{display:flex}
+/* Dock inferior: pestañas + controles de uso constante */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(14,13,17,.97);border-top:1px solid var(--line);
+  padding:8px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));backdrop-filter:blur(8px)}
+.dock-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.tabs button{background:transparent;color:var(--mute);border:1px solid var(--line);border-radius:6px;font:700 13px var(--display);letter-spacing:.08em;text-transform:uppercase;min-height:40px;cursor:pointer}
+.tabs button.sel{color:#fff;border-color:var(--red);background:var(--red-dim)}
+.ctl{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
+.ctl > button,.vol button{min-height:58px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 15px/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+#vaderBtn.real{border-color:var(--blue);background:#0f2546}
+#muteBtn.on{border-color:var(--red);background:var(--red-dim)}
+.vol{display:grid;grid-template-columns:1fr auto 1fr;gap:4px;align-items:center}
+.vol button{font-size:26px;min-height:58px}
+#volO2{font-family:var(--mono);font-size:13px;min-width:44px;text-align:center}
+body.nodock .dock{display:none}
+button:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.hero{position:relative}
+.warn{margin:0;font-size:13px;line-height:1.35;color:#ffcf66;background:#2a2108;border:1px solid #5a4510;border-radius:8px;padding:8px 10px}
+.diag{margin:0;font:12px/1.5 var(--mono);color:var(--mute);white-space:pre-wrap;background:#08080a;border:1px solid var(--line);border-radius:6px;padding:8px}
+.route{font:600 12px var(--mono);color:var(--ok);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modeLine{display:flex;align-items:center;gap:8px;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line);display:none}
+.dot.on{display:inline-block;background:var(--ok)}
+.dot.off{display:inline-block;background:#d9a400}
+.codeBox{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border:1px dashed var(--line);border-radius:8px}
+.codeBox span{font-size:13px;color:var(--mute)}
+.codeBox b{font-family:var(--mono);font-size:26px;letter-spacing:.18em}
+.big.hot{min-height:72px;font-size:22px}
+.big.danger{border-color:#5a1a22}
+#modes .big{text-transform:none;font:600 16px/1.2 system-ui,-apple-system,sans-serif;letter-spacing:0;align-items:flex-start}
+.txt{grid-column:1/-1;padding:10px;font-size:15px}
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end}
+.sheet-in{width:100%;max-width:560px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;
+  padding:14px max(14px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;max-height:88vh;overflow:auto;overscroll-behavior:contain}
+.sheet-head{position:sticky;top:0;background:var(--panel);z-index:1;margin:-4px 0;padding:4px 0}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.x{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-size:18px;cursor:pointer}
+.vrow{display:grid;grid-template-columns:1fr 48px;grid-template-areas:"lab out" "ctl ctl";gap:6px 8px;align-items:center}
+.vrow span{grid-area:lab;font-size:15px;font-weight:600}
+.vrow output{grid-area:out;font-family:var(--mono);font-size:13px;color:var(--mute);text-align:right}
+.vrow{grid-template-columns:48px 1fr 48px 52px;grid-template-areas:"lab lab lab out" "m r p p"}
+.vrow button{width:48px;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-size:24px;cursor:pointer}
+.vrow button:first-of-type{grid-area:m}
+.vrow input{grid-area:r;width:100%;accent-color:var(--red);height:32px}
+.vrow button:last-of-type{grid-area:p;justify-self:start}
+.vrow.master{border-top:1px solid var(--line);padding-top:10px}
+.vrow span small{font-weight:400;color:var(--mute);font-size:12px}
+.eqHead{border-top:1px solid var(--line);padding-top:12px}
+.eqHead h2{margin:0 0 4px}
+.eqHead .help{margin:0}
+#volBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+#volBtn small{font:400 12px var(--mono);color:var(--mute);text-transform:none;letter-spacing:0}
+details.prep{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0}
+details.prep>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;min-height:56px;text-transform:none;font-family:system-ui,-apple-system,sans-serif;letter-spacing:0;color:var(--fg)}
+details.prep>summary::-webkit-details-marker{display:none}
+.prepT{font:700 14px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--fg)}
+.prepT::after{content:' ▾';color:var(--mute)}
+details.prep:not([open]) .prepT::after{content:' ▸'}
+.prepSum{font-size:13px;color:var(--mute);line-height:1.3}
+.prepBody{display:flex;flex-direction:column;gap:10px;padding:0 12px 12px}
+.prepBody h3{margin:6px 0 0;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.chipSt{font:700 11px var(--display);letter-spacing:.1em;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--fg)}
+.chipSt.off{background:#1d1c21;color:var(--mute)}
+.chipSt.live{background:#0f3a22;border-color:#1f7a45;color:#7ff0ab}
+.chipSt.mute{background:var(--red-dim);border-color:var(--red);color:#ffb3bd}
+.chipSt.real{background:#0f2546;border-color:var(--blue);color:#a9ccff}
+.chipSt.link{background:#2a2108;border-color:#5a4510;color:#ffcf66}
+.show-btn{border-style:dashed}
+.findBar{position:sticky;top:0;z-index:5}
+.line.fav::before{content:'★ ';color:#ffcf66}
+.favEditing .line{border-style:dashed}
+.showMode{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;gap:8px;
+  padding:calc(10px + env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
+.showGrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px;min-height:0}
+.sb{border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 20px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;padding:8px;cursor:pointer;overflow:hidden}
+.sb.on{border-color:var(--red);background:var(--red-dim)}
+.sb.real{border-color:var(--blue);background:#0f2546}
+.sb.playing{border-color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
+.sb:active{transform:scale(.97)}
+.showExit{min-height:52px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 14px system-ui,sans-serif;position:relative;overflow:hidden}
+.showExit.hold::after{content:'';position:absolute;inset:0;background:rgba(224,20,43,.35);transform-origin:left;animation:fillx .8s linear forwards}
+@keyframes fillx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.chipSt.cmd{background:#101b2e;border-color:#2b4d85;color:#9fc3ff}
+.chipSt.cmd.heard{background:#0f3a22;border-color:#1f7a45;color:#7ff0ab}
+.showTop{display:flex;gap:6px;align-items:center;justify-content:center;min-height:22px}
+.toast{position:fixed;left:50%;top:calc(44px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:80;max-width:92vw;padding:12px 18px;border-radius:12px;
+  background:#0f3a22;border:1px solid #1f7a45;color:#c8ffd9;font:700 16px/1.2 var(--display);letter-spacing:.05em;text-transform:uppercase;box-shadow:0 8px 30px rgba(0,0,0,.6);pointer-events:none;animation:toastin .18s ease-out}
+.toast.warn{background:#2a2108;border-color:#5a4510;color:#ffcf66}
+@keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
+.cmdRow.hit{outline:2px solid #1f7a45;border-radius:8px;background:#0f3a22}
+.cheat{display:grid;gap:6px}
+.cheat div{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;align-items:center}
+.cheat b{font:700 13px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.cheat span{font:600 15px system-ui,sans-serif;color:var(--fg)}
+.cheat span i{font-style:normal;color:var(--mute);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- TARJETA FIJA: encendido, estado y código -->
+  <section class="hero">
+    <div class="top">
+      <button id="btn" type="button" aria-pressed="false">Encender</button>
+      <div class="topinfo">
+        <div class="modeLine"><span class="chipSt off" id="chipSt">Apagado</span><span class="chipSt cmd" id="chipCmd" hidden>🎙 comandos</span><span id="modeName">Un solo aparato</span><span class="dot" id="bgState" title="Segundo plano"></span></div>
+        <div id="status">Toca Encender</div>
+        <div class="meter"><div id="lvl"></div><div id="thrMark"></div></div>
+        <div class="gateLed"><span>micrófono</span><span id="led">● silencio</span></div>
+        <div class="route" id="routeHero" hidden></div>
+      </div>
+    </div>
+    <p class="warn" id="routeWarn" hidden></p>
+    <button class="big c" id="fixMic" type="button" hidden>Usar micrófono del celular (que suene la JBL)</button>
+    <div id="bocinaBox" class="codeBox" hidden><span>Código para conectar otro celular</span><b id="myCode">----</b></div>
+    <div id="micBox" class="codeIn" hidden><input id="code" inputmode="numeric" maxlength="4" placeholder="Código de 4 dígitos" aria-label="Código"></div>
+  </section>
+
+  <!-- INICIO: lo que se usa durante el show -->
+  <div class="tab show" id="tab-inicio">
+    <details class="prep" id="prep" open>
+      <summary><span class="prepT">Preparar</span><span class="prepSum" id="prepSum">Elige cómo lo vas a usar, el micrófono y la bocina</span></summary>
+      <div class="prepBody">
+        <h3>1 · Cómo lo vas a usar</h3>
+      <div class="list" id="modes">
+        <button class="big chip sel" data-m="solo" type="button">Un solo aparato<small>Micrófono y bocina en este celular o compu</small></button>
+        <button class="big chip" data-m="remote" type="button">Control remoto<small>Este celular controla otro aparato</small></button>
+        <button class="big chip" data-m="bocina" type="button">Bocina (2 celulares)<small>Este va con la JBL y recibe la voz</small></button>
+        <button class="big chip" data-m="mic" type="button">Micrófono + control (2 celulares)<small>Este va con los audífonos y manda la voz</small></button>
+      </div>
+      <p class="help" id="modeHelp"></p>
+        <h3>2 · Micrófono</h3>
+      <div class="row" id="micRow"><label for="mic">Micrófono</label><output></output>
+        <select id="mic" class="sel"><option value="">Micrófono predeterminado</option></select></div>
+        <h3>3 · Bocina</h3>
+      <div class="row" id="outRow" hidden><label for="out">Salida de sonido (bocina)</label><output></output>
+        <select id="out" class="sel"><option value="">Salida predeterminada</option></select></div>
+      <div id="outTools" hidden>
+        <p class="help" id="routeInfo"></p>
+        <pre class="diag" id="diag" hidden></pre>
+        <p class="help">Elige la bocina aquí. Si eliges un aparato, la app manda el sonido como música a ese aparato aunque los audífonos estén en modo llamada.</p>
+        <button class="big c" id="outSwitch" type="button">Abrir selector de salida de Android</button>
+      </div>
+      <p class="help" id="outHelp" hidden>Este navegador no deja elegir la salida aquí. En Mac: Ajustes del Sistema → Sonido → Salida → elige la JBL (o usa Chrome).</p>
+        <button class="big c" id="testSnd" type="button">Probar sonido</button>
+      </div>
+    </details>
+    <section>
+      <h2>Sable de luz</h2>
+      <button class="big c hot" id="saber" type="button">Encender sable</button>
+      <div class="grid2">
+        <button class="big c" id="swing" type="button">Movimiento</button>
+        <button class="big c" id="clash" type="button">Choque</button>
+      </div>
+    </section>
+    <section>
+      <h2>Frases favoritas</h2>
+      <div class="grid2" id="favs"></div>
+      <p class="help">Cámbialas en la pestaña <b>Frases → Elegir favoritas</b>.</p>
+    </section>
+    <section>
+      <h2>Ambiente</h2>
+      <div class="grid2">
+        <button class="big c" id="musicQuick" type="button">▶ Marcha Imperial</button>
+        <button class="big c" id="breathNow" type="button">Respirar ahora</button>
+      </div>
+      <button class="big c danger" id="stopAll" type="button">Callar todo</button>
+    </section>
+    <button class="big c show-btn" id="showOpen" type="button">Modo show: pantalla simple<small>Botones gigantes para usar con una mano y sin mirar</small></button>
+  </div>
+
+  <!-- FRASES -->
+  <div class="tab" id="tab-frases">
+    <section class="findBar">
+      <input id="q" class="sel txt" type="search" placeholder="Buscar frase (ej. padre, fuerza, fe)" aria-label="Buscar frase">
+      <label class="check"><input id="favEdit" type="checkbox"> Elegir favoritas (toca una frase para marcarla ★)</label>
+    </section>
+    <section><h2>Frases famosas</h2><div class="list" id="g-famosas"></div></section>
+    <section><h2>Respuestas cortas</h2><div class="grid2" id="g-cortas"></div></section>
+    <section><h2>Órdenes y amenazas</h2><div class="list" id="g-ordenes"></div></section>
+  </div>
+
+  <!-- SONIDOS: respiración, música, mis sonidos -->
+  <div class="tab" id="tab-sonidos">
+    <section>
+      <h2>Respiración</h2>
+      <p class="help">Elige cuál suena cuando te callas.</p>
+      <div class="list" id="breathList"></div>
+      <label class="check"><input id="autoBreath" type="checkbox" checked> Respirar solo cuando me callo</label>
+      <label class="check" id="valveRow"><input id="valve" type="checkbox" checked> Válvula del regulador (solo respiración sintética)</label>
+    </section>
+    <section>
+      <h2>Música</h2>
+      <div class="list" id="musicList"></div>
+      <label class="check"><input id="duckMusic" type="checkbox" checked> Bajar la música cuando hablo</label>
+    </section>
+    <section>
+      <h2>Mis sonidos</h2>
+      <div class="grid2" id="pads"></div>
+      <div id="padLoad" class="grid2">
+        <label class="big c" for="padFiles">Cargar sonidos</label>
+        <input id="padFiles" type="file" accept="audio/*" multiple hidden>
+        <button class="big c" id="padClear" type="button">Borrar mis sonidos</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- AJUSTES -->
+  <div class="tab" id="tab-ajustes">
+    <section>
+      <h2>Voz de Vader</h2>
+      <div class="chips" id="presets">
+        <button class="chip sel" data-p="clasico" type="button">Clásico</button>
+        <button class="chip" data-p="grave" type="button">Más grave</button>
+        <button class="chip" data-p="metal" type="button">Casco metálico</button>
+      </div>
+      <div class="row"><label for="semi">Tono</label><output id="semiO"></output><input id="semi" type="range" min="-9" max="0" step="0.5" value="-3"></div>
+      <div class="row"><label for="helmet">Casco (resonancia)</label><output id="helmetO"></output><input id="helmet" type="range" min="0" max="0.7" step="0.01" value="0.2"></div>
+      <div class="row"><label for="dist">Distorsión del parlante</label><output id="distO"></output><input id="dist" type="range" min="0" max="1" step="0.01" value="0.2"></div>
+      <div class="row"><label for="rev">Eco de sala</label><output id="revO"></output><input id="rev" type="range" min="0" max="0.6" step="0.01" value="0"></div>
+    </section>
+    <section>
+      <h2>Micrófono (avanzado)</h2>
+      <div class="row"><label for="inGain">Ganancia del micrófono</label><output id="inGainO"></output><input id="inGain" type="range" min="0.3" max="4" step="0.05" value="1.1"></div>
+      <div class="row"><label for="thr">Puerta de ruido (corta el ruido de fondo)</label><output id="thrO"></output><input id="thr" type="range" min="-70" max="-15" step="1" value="-38"></div>
+      <label class="check" id="aecRow"><input id="aec" type="checkbox"> Cancelación de eco del teléfono (NO recomendado: activa modo llamada)</label>
+    </section>
+    <section>
+      <h2>Comandos de voz</h2>
+      <p class="help">Di la frase con calma y haz una pausa corta al terminar. Cuando la entiende, el celular vibra dos veces y aparece un aviso verde. Funciona sin internet en la app de Android.</p>
+      <label class="check"><input id="voiceCmd" type="checkbox"> Activar comandos de voz en este aparato</label>
+      <label class="check"><input id="cmdAuto" type="checkbox"> Activarlos solos cada vez que enciendo</label>
+      <p class="help" id="cmdLog">Apagado.</p>
+      <button class="big c" id="cheatOpen" type="button">Ver chuleta de comandos<small>Para ensayar antes de la fiesta</small></button>
+      <details>
+        <summary>Frases que activan cada cosa</summary>
+        <p class="help">Frases discretas que Vader diría. Puedes cambiarlas; separa varias opciones con comas. Mejor frases de 2 a 4 palabras: las de una sola palabra se confunden más.</p>
+        <div class="list" id="cmdEdit"></div>
+        <label class="check"><input id="lineKwOn" type="checkbox"> Frases grabadas por voz: palabra clave + la frase</label>
+        <div class="row" id="lineKwRow"><label for="lineKw">Palabra clave para frases</label><output></output><input id="lineKw" class="sel txt" type="text" value="como dije"></div>
+      </details>
+    </section>
+    <details>
+      <summary>Ayuda: que no se corte y que suene bien</summary>
+      <ul>
+        <li><b>Un solo celular con audífonos:</b> en Bluetooth, los audífonos solo con "Llamadas" activado y "Audio" apagado; la bocina con "Audio" activado.</li>
+        <li><b>Que no se apague:</b> Ajustes → Batería → Límites de uso en segundo plano → "Apps que nunca se suspenden" → agrega Vader.</li>
+        <li><b>Que el sonido siempre vaya a la bocina:</b> Ajustes → Sonidos y vibración → Separar sonido de apps → Vader → la bocina.</li>
+        <li>Desconecta otros audífonos o bocinas para que no "roben" el audio.</li>
+        <li>Habla lento y grave. Sube la puerta de ruido hasta que diga "silencio" cuando no hablas.</li>
+        <li><b>En compu:</b> abre el enlace en Chrome, elige micrófono y salida aquí, y controla desde el celular con "Control remoto".</li>
+      </ul>
+    </details>
+  </div>
+</div>
+
+<!-- MODO SHOW -->
+<div class="showMode" id="showMode" hidden>
+  <div class="showTop"><span class="chipSt off" id="showChip">Apagado</span><span class="chipSt cmd" id="showCmd" hidden>🎙 comandos</span></div>
+  <div class="showGrid" id="showGrid">
+    <button class="sb" data-a="vader" id="sbVader" type="button">Voz Vader</button>
+    <button class="sb" data-a="mute" id="sbMute" type="button">Silenciar</button>
+    <button class="sb hotb" data-a="saber" id="sbSaber" type="button">Sable</button>
+    <button class="sb" data-a="clash" type="button">Choque</button>
+    <button class="sb" data-a="breath" type="button">Respirar</button>
+    <button class="sb" data-a="musicT" id="sbMusic" type="button">Marcha</button>
+    <button class="sb" data-a="fav0" id="sbF0" type="button">—</button>
+    <button class="sb" data-a="fav1" id="sbF1" type="button">—</button>
+    <button class="sb" data-a="fav2" id="sbF2" type="button">—</button>
+    <button class="sb" data-a="stopAll" type="button">Callar todo</button>
+  </div>
+  <button class="showExit" id="showExit" type="button">Mantén presionado para salir</button>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<!-- CHULETA DE COMANDOS -->
+<div class="sheet" id="cheat" hidden>
+  <div class="sheet-in">
+    <div class="sheet-head"><h2>Chuleta de comandos</h2><button class="x" id="cheatClose" type="button" aria-label="Cerrar">✕</button></div>
+    <p class="help">Dilas como Vader: lento, grave y con una pausa después. Si el celular vibra dos veces, entendió.</p>
+    <div class="cheat" id="cheatList"></div>
+  </div>
+</div>
+<!-- HOJA DE VOLÚMENES -->
+<div class="sheet" id="volSheet" hidden>
+  <div class="sheet-in">
+    <div class="sheet-head"><h2>Volumen y ecualizador</h2><button class="x" id="volClose" type="button" aria-label="Cerrar">✕</button></div>
+    <div class="vrow"><span>Mi voz</span><button type="button" data-step="voiceVol:-0.1">−</button><input id="voiceVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de la voz"><button type="button" data-step="voiceVol:0.1">+</button><output id="voiceVolO"></output></div>
+    <div class="vrow"><span>Efectos y frases</span><button type="button" data-step="sfxVol:-0.1">−</button><input id="sfxVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de efectos"><button type="button" data-step="sfxVol:0.1">+</button><output id="sfxVolO"></output></div>
+    <div class="vrow"><span>Música</span><button type="button" data-step="musicVol:-0.1">−</button><input id="musicVol" type="range" min="0" max="2" step="0.05" value="0.8" aria-label="Volumen de música"><button type="button" data-step="musicVol:0.1">+</button><output id="musicVolO"></output></div>
+    <div class="vrow"><span>Respiración</span><button type="button" data-step="breathVol:-0.1">−</button><input id="breathVol" type="range" min="0" max="2" step="0.05" value="0.7" aria-label="Volumen de respiración"><button type="button" data-step="breathVol:0.1">+</button><output id="breathVolO"></output></div>
+    <div class="vrow master"><span>General</span><button type="button" data-step="vol:-0.1">−</button><input id="vol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen general"><button type="button" data-step="vol:0.1">+</button><output id="volO"></output></div>
+    <div class="eqHead"><h2>Ecualizador · según la bocina</h2><p class="help">Elige tu bocina como punto de partida y ajusta de oído. Afecta voz, efectos y música.</p></div>
+    <div class="chips" id="spkPresets">
+      <button class="chip" data-s="plano" type="button">Plano</button>
+      <button class="chip" data-s="jbl" type="button">JBL Charge 5</button>
+      <button class="chip" data-s="chica" type="button">Bocina chica</button>
+      <button class="chip" data-s="cel" type="button">Altavoz del cel</button>
+      <button class="chip" data-s="grande" type="button">Bocina grande</button>
+    </div>
+    <div class="vrow"><span>Graves <small>(cuerpo de la voz)</small></span><button type="button" data-step="eqLow:-1">−</button><input id="eqLow" type="range" min="-12" max="12" step="1" value="0" aria-label="Graves"><button type="button" data-step="eqLow:1">+</button><output id="eqLowO"></output></div>
+    <div class="vrow"><span>Medios <small>(se entiende lo que dices)</small></span><button type="button" data-step="eqMid:-1">−</button><input id="eqMid" type="range" min="-12" max="12" step="1" value="0" aria-label="Medios"><button type="button" data-step="eqMid:1">+</button><output id="eqMidO"></output></div>
+    <div class="vrow"><span>Agudos <small>(brillo y la "s")</small></span><button type="button" data-step="eqHigh:-1">−</button><input id="eqHigh" type="range" min="-12" max="12" step="1" value="0" aria-label="Agudos"><button type="button" data-step="eqHigh:1">+</button><output id="eqHighO"></output></div>
+  </div>
+</div>
+
+<nav class="dock" aria-label="Controles">
+  <div class="dock-in">
+    <div class="ctl">
+      <button id="vaderBtn" type="button">Voz Vader</button>
+      <button id="muteBtn" type="button">Silenciar</button>
+      <button id="volBtn" type="button">Vol · EQ<small id="volO2">100%</small></button>
+    </div>
+    <div class="tabs" id="tabs">
+      <button class="sel" data-tab="inicio" type="button">Inicio</button>
+      <button data-tab="frases" type="button">Frases</button>
+      <button data-tab="sonidos" type="button">Sonidos</button>
+      <button data-tab="ajustes" type="button">Ajustes</button>
+    </div>
+  </div>
+</nav>
+
+<script src="peerjs.min.js"></script>
+<script>if(/VaderApp/.test(navigator.userAgent)){document.write('<script src="vosk.js"><\/script>');}</script>
+<script>
+// ---------- Procesadores de audio (corren en hilo de audio) ----------
+const WORKLET = `
+class VaderGate extends AudioWorkletProcessor {
+  constructor(){ super(); this.env=0; this.g=0; this.hold=0; this.peak=0; this.cnt=0;
+    this.thr=Math.pow(10,-38/20);
+    this.port.onmessage=e=>{ if(typeof e.data.thr==='number') this.thr=Math.pow(10,e.data.thr/20); }; }
+  process(inputs, outputs){
+    const i=inputs[0]&&inputs[0][0], o=outputs[0][0]; if(!o) return true;
+    const sr=sampleRate, atk=Math.exp(-1/(sr*0.002)), rel=Math.exp(-1/(sr*0.06));
+    const gOpen=1-Math.exp(-1/(sr*0.004)), gClose=1-Math.exp(-1/(sr*0.09)), holdN=sr*0.12;
+    for(let k=0;k<o.length;k++){
+      const x=i?i[k]:0, a=Math.abs(x);
+      this.env = a>this.env ? atk*this.env+(1-atk)*a : rel*this.env+(1-rel)*a;
+      if(this.env>this.thr) this.hold=holdN; else if(this.hold>0) this.hold--;
+      const t=this.hold>0?1:0; this.g += (t-this.g)*(t>this.g?gOpen:gClose);
+      o[k]=x*this.g; if(this.env>this.peak) this.peak=this.env;
+    }
+    this.cnt+=o.length;
+    if(this.cnt>=sr/30){ this.port.postMessage({lvl:this.peak, open:this.hold>0}); this.peak=0; this.cnt=0; }
+    return true;
+  }
+}
+registerProcessor('vader-gate', VaderGate);
+
+class PitchShift extends AudioWorkletProcessor {
+  static get parameterDescriptors(){ return [{name:'ratio',defaultValue:0.79,minValue:0.25,maxValue:2,automationRate:'k-rate'}]; }
+  constructor(){ super(); this.win=Math.round(sampleRate*0.048); this.N=this.win*4;
+    this.buf=new Float32Array(this.N); this.w=0; this.ph=0; }
+  read(d){ let p=this.w-1-d; while(p<0)p+=this.N; const i0=Math.floor(p), f=p-i0, i1=(i0+1)%this.N;
+    return this.buf[i0]*(1-f)+this.buf[i1]*f; }
+  process(inputs, outputs, params){
+    const i=inputs[0]&&inputs[0][0], o=outputs[0][0]; if(!o) return true;
+    const inc=(1-params.ratio[0])/this.win, W=this.win;
+    for(let k=0;k<o.length;k++){
+      this.buf[this.w]=i?i[k]:0;
+      this.ph+=inc; if(this.ph>=1)this.ph-=1; else if(this.ph<0)this.ph+=1;
+      const p2=(this.ph+0.5)%1;
+      const g1=Math.sin(Math.PI*this.ph), g2=Math.sin(Math.PI*p2);
+      o[k]=this.read(this.ph*W)*g1*g1 + this.read(p2*W)*g2*g2;
+      this.w=(this.w+1)%this.N;
+    }
+    return true;
+  }
+}
+registerProcessor('pitch-shift', PitchShift);
+
+// Copia el sonido final para mandarlo a la salida nativa elegida (bloques de 1024 muestras, PCM 16 bits estéreo)
+class OutTap extends AudioWorkletProcessor {
+  constructor(){ super(); this.n=1024; this.b=new Int16Array(this.n*2); this.i=0; }
+  process(inputs, outputs){
+    const inp=inputs[0]; if(!inp||!inp.length) return true;
+    const L=inp[0], Rr=inp[1]||inp[0];
+    for(let k=0;k<L.length;k++){
+      let l=L[k], r=Rr[k]; l=l<-1?-1:l>1?1:l; r=r<-1?-1:r>1?1:r;
+      this.b[this.i++]=(l*32767)|0; this.b[this.i++]=(r*32767)|0;
+      if(this.i>=this.b.length){ this.port.postMessage(this.b.buffer,[this.b.buffer]); this.b=new Int16Array(this.n*2); this.i=0; }
+    }
+    return true;
+  }
+}
+registerProcessor('out-tap', OutTap);
+`;
+
+// ---------- Estado ----------
+const $=id=>document.getElementById(id);
+let ctx=null, stream=null, src=null, nodes={}, running=false, wakeLock=null, noiseBuf=null;
+let breathing=false, lastVoice=0, saber=null;
+let meterSrc=null;
+let mode='solo', peer=null, call=null, remoteEl=null, sendStream=null, meterCtx=null, meterRaf=0, myCode='';
+let conns=new Set(), remoteConn=null, muted=false, vader=true, lastLvlSend=0;
+let man={breaths:[],music:[],lines:[],saber:null}, bufs={}, pads=[];
+let breathSel='b1', bed=null, bedUp=false, forceBedUntil=0, music=null, musicId=null, lineSrc=null, lineId=null;
+const PRESETS={
+  clasico:{semi:-3, helmet:0.2, dist:0.2, rev:0},
+  grave:{semi:-5, helmet:0.2, dist:0.2, rev:0.03},
+  metal:{semi:-3, helmet:0.45, dist:0.45, rev:0.06}
+};
+const fmt={
+  semi:v=>(v>0?'+':'')+v+' st', helmet:v=>Math.round(v*100)+'%', dist:v=>Math.round(v*100)+'%', rev:v=>Math.round(v/0.6*100)+'%',
+  voiceVol:v=>Math.round(v*100)+'%', breathVol:v=>Math.round(v*100)+'%', sfxVol:v=>Math.round(v*100)+'%', musicVol:v=>Math.round(v*100)+'%',
+  inGain:v=>'×'+(+v).toFixed(2), thr:v=>v+' dB', vol:v=>Math.round(v*100)+'%',
+  eqLow:v=>(v>0?'+':'')+v+' dB', eqMid:v=>(v>0?'+':'')+v+' dB', eqHigh:v=>(v>0?'+':'')+v+' dB'
+};
+const IDS=Object.keys(fmt);
+const TOGGLES=['autoBreath','valve','duckMusic'];
+function setStatus(t){ $('status').textContent=t; }
+const isCtl=()=>mode==='remote'||mode==='mic';
+
+// ---------- Utilidades de audio ----------
+function curve(amount){ const k=1+amount*12, n=2048, c=new Float32Array(n), d=Math.tanh(k);
+  for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(k*x)/d; } return c; }
+function impulse(sec){ const len=Math.round(ctx.sampleRate*sec), b=ctx.createBuffer(2,len,ctx.sampleRate);
+  for(let ch=0;ch<2;ch++){ const d=b.getChannelData(ch); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3); } return b; }
+function makeNoise(){ const len=ctx.sampleRate*2, b=ctx.createBuffer(1,len,ctx.sampleRate), d=b.getChannelData(0);
+  for(let i=0;i<len;i++) d[i]=Math.random()*2-1; return b; }
+function noiseSrc(){ const s=ctx.createBufferSource(); s.buffer=noiseBuf; s.loop=true; return s; }
+function ramp(param,v,tc){ param.cancelScheduledValues(ctx.currentTime); param.setTargetAtTime(v,ctx.currentTime,tc); }
+
+async function build(){
+  ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'interactive'});
+  const url=URL.createObjectURL(new Blob([WORKLET],{type:'application/javascript'}));
+  await ctx.audioWorklet.addModule(url);
+  noiseBuf=makeNoise();
+  const n=nodes;
+  n.inGain=ctx.createGain();
+  n.hp=ctx.createBiquadFilter(); n.hp.type='highpass'; n.hp.frequency.value=80;
+  n.gate=new AudioWorkletNode(ctx,'vader-gate',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
+  n.voiceMute=ctx.createGain();
+  n.shift=new AudioWorkletNode(ctx,'pitch-shift',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
+  // Ecualización medida contra las frases reales de Vader (espectro promedio de 28 frases)
+  n.low=ctx.createBiquadFilter(); n.low.type='peaking'; n.low.frequency.value=285; n.low.Q.value=1.15; n.low.gain.value=9;
+  n.mid=ctx.createBiquadFilter(); n.mid.type='peaking'; n.mid.frequency.value=1750; n.mid.Q.value=0.55; n.mid.gain.value=-7;
+  n.mask=ctx.createBiquadFilter(); n.mask.type='peaking'; n.mask.frequency.value=2370; n.mask.Q.value=3; n.mask.gain.value=6;
+  n.sub=ctx.createBiquadFilter(); n.sub.type='highpass'; n.sub.frequency.value=120; n.sub.Q.value=0.7;
+  n.lp2=ctx.createBiquadFilter(); n.lp2.type='lowpass'; n.lp2.frequency.value=7300; n.lp2.Q.value=0.7;
+  n.shaper=ctx.createWaveShaper(); n.shaper.oversample='2x';
+  n.shPost=ctx.createGain();
+  n.lp=ctx.createBiquadFilter(); n.lp.type='lowpass'; n.lp.frequency.value=5200; n.lp.Q.value=0.75;
+  n.vaderGain=ctx.createGain(); n.dry=ctx.createGain(); n.dry.gain.value=0;
+  n.helmetIn=ctx.createGain();
+  n.combDelay=ctx.createDelay(0.05); n.combDelay.delayTime.value=0.0068;
+  n.combFb=ctx.createGain(); n.combLp=ctx.createBiquadFilter(); n.combLp.type='lowpass'; n.combLp.frequency.value=3200;
+  n.combOut=ctx.createGain();
+  n.comp=ctx.createDynamicsCompressor(); n.comp.threshold.value=-22; n.comp.ratio.value=5; n.comp.attack.value=0.003; n.comp.release.value=0.15;
+  n.verb=ctx.createConvolver(); n.verb.buffer=impulse(0.7); n.verbWet=ctx.createGain();
+  n.master=ctx.createGain(); n.master.gain.value=0;
+  n.limiter=ctx.createDynamicsCompressor(); n.limiter.threshold.value=-3; n.limiter.ratio.value=20; n.limiter.attack.value=0.001; n.limiter.release.value=0.08;
+  // respiración sintética (pasa por el casco)
+  n.breathVol=ctx.createGain(); n.breathBus=ctx.createGain();
+  // respiración grabada, efectos, frases y música (limpios, sin casco)
+  n.bedDuck=ctx.createGain(); n.bedDuck.gain.value=0; n.bedVol=ctx.createGain();
+  n.sfx=ctx.createGain(); n.musicVol=ctx.createGain(); n.musicDuck=ctx.createGain();
+  n.fx=ctx.createGain(); n.voiceVol=ctx.createGain();
+
+  n.inGain.connect(n.hp); n.hp.connect(n.gate); n.gate.connect(n.voiceMute);
+  n.voiceMute.connect(n.shift); n.voiceMute.connect(n.dry); n.dry.connect(n.comp);
+  n.shift.connect(n.sub); n.sub.connect(n.low); n.low.connect(n.mid); n.mid.connect(n.mask); n.mask.connect(n.shaper); n.shaper.connect(n.shPost); n.shPost.connect(n.lp);
+  n.lp.connect(n.lp2); n.lp2.connect(n.vaderGain); n.vaderGain.gain.value=0.7; n.vaderGain.connect(n.helmetIn);
+  n.breathVol.connect(n.breathBus); n.breathBus.connect(n.helmetIn);
+  n.helmetIn.connect(n.comp);
+  n.helmetIn.connect(n.combDelay); n.combDelay.connect(n.combLp); n.combLp.connect(n.combFb); n.combFb.connect(n.combDelay);
+  n.combDelay.connect(n.combOut); n.combOut.connect(n.comp);
+  n.comp.connect(n.voiceVol); n.comp.connect(n.verb); n.verb.connect(n.verbWet); n.verbWet.connect(n.voiceVol); n.voiceVol.connect(n.master);
+  n.bedDuck.connect(n.bedVol); n.bedVol.connect(n.fx);
+  n.sfx.connect(n.fx); n.musicVol.connect(n.musicDuck); n.musicDuck.connect(n.fx);
+  n.fx.connect(n.master);
+  // Ecualizador de salida (según la bocina): graves, medios, agudos + compensación para no saturar
+  n.eqLow=ctx.createBiquadFilter(); n.eqLow.type='lowshelf'; n.eqLow.frequency.value=150;
+  n.eqMid=ctx.createBiquadFilter(); n.eqMid.type='peaking'; n.eqMid.frequency.value=1200; n.eqMid.Q.value=0.8;
+  n.eqHigh=ctx.createBiquadFilter(); n.eqHigh.type='highshelf'; n.eqHigh.frequency.value=4000;
+  n.eqTrim=ctx.createGain();
+  n.master.connect(n.eqLow); n.eqLow.connect(n.eqMid); n.eqMid.connect(n.eqHigh); n.eqHigh.connect(n.eqTrim);
+  n.eqTrim.connect(n.limiter); n.limiter.connect(ctx.destination);
+  n.tap=new AudioWorkletNode(ctx,'out-tap',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1],channelCount:2,channelCountMode:'explicit',channelInterpretation:'speakers'});
+  n.tapSilent=ctx.createGain(); n.tapSilent.gain.value=0; n.tap.connect(n.tapSilent); n.tapSilent.connect(ctx.destination);
+  n.tap.port.onmessage=e=>{ if(natOut && window.VaderNative){ try{ VaderNative.pushPcm(b64(e.data)); }catch(_){} } };
+  n.gate.port.onmessage=e=>onLevel(e.data);
+  applyAll(); setVader(vader,true);
+  loadBuffers();
+}
+
+// ---------- Sonidos del paquete ----------
+async function loadManifest(){
+  try{ const r=await fetch('sounds/sounds.json',{cache:'no-cache'}); man=await r.json(); }catch(e){ man={breaths:[],music:[],lines:[],saber:null}; }
+  renderLibrary();
+}
+async function getBuf(file){
+  if(bufs[file]) return bufs[file];
+  const p=(async()=>{ const r=await fetch(file); return await ctx.decodeAudioData(await r.arrayBuffer()); })();
+  bufs[file]=p; try{ return await p; }catch(e){ delete bufs[file]; throw e; }
+}
+async function loadBuffers(){
+  const files=[...man.breaths.map(b=>b.file), man.saber&&man.saber.file, ...man.lines.map(l=>l.file), ...man.music.map(m=>m.file)].filter(Boolean);
+  for(const f of files){ try{ await getBuf(f); }catch(e){} }
+  decodePads();
+}
+function btn(label, sub, cls, onClick, id){
+  const b=document.createElement('button'); b.type='button'; b.className='big'+(cls?' '+cls:'');
+  b.textContent=label; if(sub){ const s=document.createElement('small'); s.textContent=sub; b.appendChild(s); }
+  if(id) b.dataset.id=id; b.addEventListener('click',onClick); return b;
+}
+function renderLibrary(){
+  const G={'Frases famosas':'g-famosas','Respuestas cortas':'g-cortas','Órdenes y amenazas':'g-ordenes'};
+  Object.values(G).forEach(id=>$(id).innerHTML='');
+  man.lines.forEach(l=>{ const box=$(G[l.group]||'g-ordenes'); if(!box) return;
+    box.appendChild(btn(l.es, l.group==='Respuestas cortas'?null:'"'+l.en+'"', 'line'+(favIds.includes(l.id)?' fav':''), ()=>{ if($('favEdit').checked){ toggleFav(l.id); return; } runCmd('line',l.id); }, l.id)); });
+  const fv=$('favs'); fv.innerHTML='';
+  const favs=favIds.map(id=>man.lines.find(x=>x.id===id)).filter(Boolean);
+  favs.forEach(l=>fv.appendChild(btn(l.es,null,'line',()=>runCmd('line',l.id),l.id)));
+  if(!favs.length) fv.innerHTML='<p class="help" style="grid-column:1/-1">No tienes favoritas. Elígelas en la pestaña Frases.</p>';
+  [0,1,2].forEach(i=>{ const l=favs[i]; const b=$('sbF'+i); b.textContent=l?l.es:'—'; b.dataset.id=l?l.id:''; b.disabled=!l; });
+  filterLines();
+  const bl=$('breathList'); bl.innerHTML='';
+  [...man.breaths.map(b=>({id:b.id,name:b.name})), {id:'synth',name:'Respiración sintética (generada por la app)'}]
+    .forEach(b=>bl.appendChild(btn(b.name,null,'breathOpt'+(b.id===breathSel?' on':''),()=>runCmd('breathSel',b.id),b.id)));
+  const ml=$('musicList'); ml.innerHTML='';
+  man.music.forEach(m=>ml.appendChild(btn('▶ '+m.name,'Toca para reproducir o detener','music',()=>runCmd('music',m.id),m.id)));
+  if(!man.music.length) ml.innerHTML='<p class="help">No hay música cargada.</p>';
+  syncLibraryUI();
+}
+function syncLibraryUI(){
+  document.querySelectorAll('.breathOpt').forEach(b=>b.classList.toggle('on',b.dataset.id===breathSel));
+  document.querySelectorAll('.music').forEach(b=>{ const on=b.dataset.id===musicId; b.classList.toggle('playing',on);
+    const m=man.music.find(x=>x.id===b.dataset.id); if(m) b.firstChild.textContent=(on?'■ ':'▶ ')+m.name; });
+  document.querySelectorAll('.line').forEach(b=>b.classList.toggle('playing',b.dataset.id===lineId));
+  if(man.music[0]){ const on=musicId===man.music[0].id; $('musicQuick').textContent=(on?'■ ':'▶ ')+man.music[0].name; $('musicQuick').classList.toggle('playing',on); $('sbMusic').textContent=on?'■ Marcha':'Marcha'; $('sbMusic').classList.toggle('playing',on); }
+  document.querySelectorAll('#showGrid .sb[data-id]').forEach(b=>b.classList.toggle('playing',!!b.dataset.id && b.dataset.id===lineId));
+  $('valveRow').hidden=breathSel!=='synth';
+}
+
+// ---------- Frases, música, respiración grabada ----------
+let lineReq=0;
+async function playLine(id){
+  const l=man.lines.find(x=>x.id===id); if(!l) return;
+  if(lineSrc){ try{ lineSrc.stop(); }catch(e){} lineSrc=null; }
+  const my=++lineReq; let b; try{ b=await getBuf(l.file); }catch(e){ setStatus('No se pudo cargar la frase'); return; }
+  if(my!==lineReq) return;
+  const s=ctx.createBufferSource(); s.buffer=b; s.connect(nodes.sfx); s.start();
+  lineSrc=s; lineId=id; syncLibraryUI(); broadcastState();
+  s.onended=()=>{ if(lineSrc===s){ lineSrc=null; lineId=null; syncLibraryUI(); broadcastState(); } };
+}
+let musicReq=0;
+async function toggleMusic(id){
+  if(music){ const was=musicId; stopMusic(); if(was===id) return; }
+  const m=man.music.find(x=>x.id===id); if(!m) return;
+  const my=++musicReq; let b; try{ b=await getBuf(m.file); }catch(e){ setStatus('No se pudo cargar la música'); return; }
+  if(my!==musicReq) return;
+  const s=ctx.createBufferSource(); s.buffer=b; s.connect(nodes.musicVol); s.start();
+  music=s; musicId=id; syncLibraryUI(); broadcastState();
+  s.onended=()=>{ if(music===s){ music=null; musicId=null; syncLibraryUI(); broadcastState(); } };
+}
+function stopMusic(){ musicReq++; if(music){ try{ music.stop(); }catch(e){} } music=null; musicId=null; syncLibraryUI(); broadcastState(); }
+let bedReq=0;
+async function startBed(){
+  stopBed(); const my=++bedReq;
+  const b=man.breaths.find(x=>x.id===breathSel); if(!b || !ctx) return;
+  let buf; try{ buf=await getBuf(b.file); }catch(e){ return; }
+  if(my!==bedReq||!running) return;
+  const s=ctx.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(nodes.bedDuck); s.start();
+  bed=s; bedUp=false; nodes.bedDuck.gain.value=0;
+}
+function stopBed(){ bedReq++; if(bed){ try{ bed.stop(); }catch(e){} bed=null; } bedUp=false; if(nodes.bedDuck) nodes.bedDuck.gain.value=0; gateThr(false); }
+function gateThr(raised){ const thr=+$('thr').value; nodes.gate && nodes.gate.port.postMessage({thr: raised?Math.min(-10,thr+14):thr}); }
+function setBed(up){
+  if(!bed || up===bedUp) return;
+  bedUp=up; ramp(nodes.bedDuck.gain, up?1:0, up?0.25:0.04);
+  gateThr(up); // que la respiración que sale de la bocina no se cuele como voz
+}
+
+// ---------- Nivel del micrófono: respiración automática y música ----------
+function onLevel({lvl,open}){
+  const db=20*Math.log10(lvl+1e-7), pct=Math.max(0,Math.min(100,(db+70)/70*100));
+  $('lvl').style.width=pct+'%';
+  const led=$('led'); led.textContent=open?'● hablando':'● silencio'; led.classList.toggle('on',open);
+  if(conns.size && performance.now()-lastLvlSend>100){ lastLvlSend=performance.now(); conns.forEach(c=>{ try{ c.open&&c.send({t:'lvl',p:pct,open}); }catch(e){} }); }
+  if(!running) return;
+  const now=performance.now(), t=ctx.currentTime;
+  if(open) lastVoice=now;
+  const talking=open && !muted;
+  if($('duckMusic').checked) ramp(nodes.musicDuck.gain, talking?0.25:1, talking?0.05:0.4);
+  if(breathSel==='synth'){
+    nodes.breathBus.gain.setTargetAtTime(open?0:1, t, open?0.04:0.15);
+    if($('autoBreath').checked && !breathing && !saber && now-lastVoice>1500) breath();
+  } else {
+    const want=(now<forceBedUntil) || ($('autoBreath').checked && now-lastVoice>900);
+    setBed(open && now>=forceBedUntil ? false : want);
+  }
+}
+
+// ---------- Respiración sintética ----------
+function puff(t,f0,f1,q,peak,rise,sus,fall){
+  const s=noiseSrc(), bp=ctx.createBiquadFilter(), g=ctx.createGain();
+  bp.type='bandpass'; bp.Q.value=q; bp.frequency.setValueAtTime(f0,t); bp.frequency.linearRampToValueAtTime(f1,t+rise+sus+fall);
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(peak,t+rise); g.gain.linearRampToValueAtTime(peak*0.8,t+rise+sus); g.gain.linearRampToValueAtTime(0,t+rise+sus+fall);
+  s.connect(bp); bp.connect(g); g.connect(nodes.breathVol); s.start(t,Math.random()); s.stop(t+rise+sus+fall+0.05);
+}
+function click(t){
+  const s=noiseSrc(), bp=ctx.createBiquadFilter(), g=ctx.createGain();
+  bp.type='bandpass'; bp.frequency.value=1500; bp.Q.value=4;
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.09,t+0.004); g.gain.exponentialRampToValueAtTime(0.0001,t+0.07);
+  s.connect(bp); bp.connect(g); g.connect(nodes.breathVol); s.start(t); s.stop(t+0.09);
+  const o=ctx.createOscillator(), og=ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(210,t); o.frequency.exponentialRampToValueAtTime(120,t+0.06);
+  og.gain.setValueAtTime(0.0001,t); og.gain.linearRampToValueAtTime(0.07,t+0.003); og.gain.exponentialRampToValueAtTime(0.0001,t+0.08);
+  o.connect(og); og.connect(nodes.breathVol); o.start(t); o.stop(t+0.1);
+}
+function breath(){
+  if(!ctx||breathing) return;
+  breathing=true; gateThr(true);
+  const t=ctx.currentTime+0.02;
+  puff(t,1100,1550,0.9,0.55,0.35,0.85,0.35); puff(t,2900,3300,9,0.18,0.35,0.85,0.35);
+  const t2=t+1.75;
+  if($('valve').checked){ click(t+1.62); click(t2+1.95); }
+  puff(t2,780,540,0.7,0.7,0.3,1.0,0.6); puff(t2,2400,2100,8,0.12,0.3,1.0,0.6);
+  setTimeout(()=>{ breathing=false; gateThr(false); }, 4100);
+}
+
+// ---------- Sable de luz (grabación real + efectos) ----------
+let saberBusy=false;
+async function toggleSaber(){
+  const t=ctx.currentTime;
+  if(!saber){
+    if(saberBusy) return; saberBusy=true;
+    let s=null, g=ctx.createGain();
+    try{
+      const b=await getBuf(man.saber.file); s=ctx.createBufferSource(); s.buffer=b; s.loop=true;
+      s.loopStart=man.saber.loopStart; s.loopEnd=man.saber.loopEnd; s.connect(g); g.gain.value=1; s.start();
+    }catch(e){ s=null; } saberBusy=false;
+    if(!s){ // respaldo sintético
+      const o1=ctx.createOscillator(), o2=ctx.createOscillator(), f=ctx.createBiquadFilter();
+      o1.type='sawtooth'; o1.frequency.value=90; o2.type='sawtooth'; o2.frequency.value=91.8; f.type='lowpass'; f.Q.value=5;
+      f.frequency.setValueAtTime(140,t); f.frequency.exponentialRampToValueAtTime(2600,t+0.22); f.frequency.exponentialRampToValueAtTime(1000,t+0.6);
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.32,t+0.12); o1.connect(f); o2.connect(f); f.connect(g); o1.start(); o2.start();
+      saber={synth:[o1,o2], g};
+    } else saber={src:s, g};
+    g.connect(nodes.sfx);
+  } else {
+    const {src:s,synth,g}=saber;
+    if(s){ s.playbackRate.cancelScheduledValues(t); s.playbackRate.setValueAtTime(s.playbackRate.value,t); s.playbackRate.exponentialRampToValueAtTime(0.45,t+0.38); }
+    g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(0,t+0.4);
+    // golpe grave de apagado
+    const o=ctx.createOscillator(), og=ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(40,t+0.35);
+    const lf=ctx.createBiquadFilter(); lf.type='lowpass'; lf.frequency.setValueAtTime(900,t); lf.frequency.exponentialRampToValueAtTime(120,t+0.35);
+    og.gain.setValueAtTime(0.18,t); og.gain.linearRampToValueAtTime(0,t+0.38); o.connect(lf); lf.connect(og); og.connect(nodes.sfx); o.start(t); o.stop(t+0.4);
+    (s?[s]:synth).forEach(x=>x.stop(t+0.42));
+    saber=null;
+  }
+  $('saber').classList.toggle('on',!!saber); $('saber').textContent=saber?'Apagar sable':'Encender sable';
+  $('sbSaber').classList.toggle('on',!!saber); $('sbSaber').textContent=saber?'Apagar sable':'Sable';
+  broadcastState();
+}
+function swing(){
+  if(!saber) return; const t=ctx.currentTime, {src:s,g}=saber;
+  if(s){ s.playbackRate.cancelScheduledValues(t); s.playbackRate.setValueAtTime(1,t); s.playbackRate.linearRampToValueAtTime(1.22,t+0.16); s.playbackRate.linearRampToValueAtTime(1,t+0.5); }
+  g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(1,t); g.gain.linearRampToValueAtTime(1.6,t+0.16); g.gain.linearRampToValueAtTime(1,t+0.5);
+}
+function clash(){
+  const t=ctx.currentTime;
+  const s=noiseSrc(), bp=ctx.createBiquadFilter(), g=ctx.createGain();
+  bp.type='bandpass'; bp.frequency.value=2600; bp.Q.value=0.7;
+  g.gain.setValueAtTime(0.9,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+  s.connect(bp); bp.connect(g); g.connect(nodes.sfx); s.start(t); s.stop(t+0.5);
+  const o=ctx.createOscillator(), og=ctx.createGain(); o.type='square'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(140,t+0.3);
+  og.gain.setValueAtTime(0.25,t); og.gain.exponentialRampToValueAtTime(0.001,t+0.3); o.connect(og); og.connect(nodes.sfx); o.start(t); o.stop(t+0.32);
+}
+
+// ---------- Voz: Vader / real / silencio / volumen ----------
+function setVader(on,quiet){
+  vader=on;
+  if(ctx){ ramp(nodes.vaderGain.gain,on?0.7:0,0.03); ramp(nodes.dry.gain,on?0:1.2,0.03); }
+  $('vaderBtn').classList.toggle('real',!on); $('vaderBtn').textContent=on?'Voz Vader':'Mi voz';
+  updChip(); if(!quiet) broadcastState();
+}
+function setMuted(m){
+  muted=m; if(ctx) ramp(nodes.voiceMute.gain,m?0:1,0.02);
+  $('muteBtn').classList.toggle('on',m); $('muteBtn').textContent=m?'Activar voz':'Silenciar';
+  updChip(); broadcastState();
+}
+function stepVol(d){ const v=Math.max(0,Math.min(2,Math.round((+$('vol').value+d)*20)/20)); $('vol').value=v; apply('vol'); save(); }
+function stopAll(){
+  lineReq++; if(lineSrc){ try{ lineSrc.stop(); }catch(e){} } stopMusic(); if(saber) toggleSaber(); forceBedUntil=0;
+  padSrc.forEach(s=>{ try{ s.stop(); }catch(e){} }); padSrc=[];
+}
+
+// ---------- Comandos (locales o desde el celular) ----------
+function runCmd(a,arg){
+  if(isCtl()){ send({t:'cmd',a,arg}); return; }
+  if(a==='breathSel'){ breathSel=arg; save(); if(running){ if(arg==='synth') stopBed(); else startBed(); } syncLibraryUI(); return; }
+  if(a==='vader'){ setVader(!vader); return; }
+  if(a==='mute'){ setMuted(!muted); return; }
+  if(a==='volUp'){ stepVol(0.1); return; }
+  if(a==='volDown'){ stepVol(-0.1); return; }
+  if(a==='vaderOn'){ setVader(true); return; }
+  if(a==='vaderOff'){ setVader(false); return; }
+  if(a==='muteOn'){ setMuted(true); return; }
+  if(a==='muteOff'){ setMuted(false); return; }
+  if(!ctx || !running){ setStatus('Primero toca Encender en la compu'); return; }
+  switch(a){
+    case 'line': playLine(arg); break;
+    case 'music': toggleMusic(arg); break;
+    case 'saber': toggleSaber(); break;
+    case 'swing': swing(); break;
+    case 'clash': clash(); break;
+    case 'breath': if(breathSel==='synth') breath(); else { forceBedUntil=performance.now()+6000; setBed(true); } break;
+    case 'stopAll': stopAll(); break;
+    case 'pad': playPad(arg); break;
+    case 'saberOn': if(!saber) toggleSaber(); break;
+    case 'saberOff': if(saber) toggleSaber(); break;
+    case 'musicPlay': if(musicId!==arg) toggleMusic(arg); break;
+    case 'musicStop': stopMusic(); break;
+    case 'intro': if(man.music[0] && musicId!==man.music[0].id) toggleMusic(man.music[0].id); runCmd('breath'); break;
+  }
+}
+
+// ---------- Micrófono, encendido, apagado ----------
+async function openMic(){
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); }
+  if(src){ try{ src.disconnect(); }catch(e){} }
+  const aec=$('aec').checked;
+  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:aec,noiseSuppression:aec,autoGainControl:false,channelCount:1,
+    deviceId:$('mic').value?{exact:$('mic').value}:undefined}});
+  src=ctx.createMediaStreamSource(stream); src.connect(nodes.inGain);
+  listMics();
+}
+async function listMics(){
+  try{
+    const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');
+    const sel=$('mic'), cur=sel.value; sel.innerHTML='';
+    devs.forEach((d,i)=>{ const o=document.createElement('option'); o.value=d.deviceId==='default'?'':d.deviceId; o.textContent=d.label||('Micrófono '+(i+1)); sel.appendChild(o); });
+    if(!devs.length){ const o=document.createElement('option'); o.value=''; o.textContent='Micrófono predeterminado'; sel.appendChild(o); }
+    if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
+  }catch(e){}
+}
+$('mic').addEventListener('change',async()=>{ const lab=($('mic').selectedOptions[0]||{}).textContent||'';
+  if(/bluetooth|headset|buds/i.test(lab) && /Android/i.test(navigator.userAgent)) setStatus('Ojo: en Android un micrófono Bluetooth pasa el audio a modo llamada.');
+  if(running && mode!=='mic' && mode!=='remote'){ try{ await openMic(); setStatus('Micrófono cambiado'); showRoute(); }catch(e){ setStatus('Ese micrófono no se pudo usar'); } }
+  else if(running && mode==='mic' && sendStream){ try{
+      const ns=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1,deviceId:$('mic').value?{exact:$('mic').value}:undefined}});
+      const tr=ns.getAudioTracks()[0]; if(call&&call.peerConnection){ const sd=call.peerConnection.getSenders().find(x=>x.track&&x.track.kind==='audio'); if(sd) await sd.replaceTrack(tr); }
+      sendStream.getTracks().forEach(t=>t.stop()); sendStream=ns;
+      if(meterCtx){ const an=meterCtx.createAnalyser(); an.fftSize=512; meterCtx.createMediaStreamSource(ns).connect(an); restartMeter(an); } setStatus('Micrófono cambiado: '+lab);
+    }catch(e){ setStatus('Ese micrófono no se pudo usar'); } } });
+// ---------- Salida de sonido ----------
+// En la app de Android: el sonido final se reproduce como MÚSICA en el aparato elegido (no como llamada).
+// En el navegador de compu: se usa setSinkId.
+const NATIVE_OUT=!!(window.VaderNative && VaderNative.hasOutput);
+let natOut=false, natOutId=0, routeTimer=0, lastWritten=-1, stuck=0;
+function b64(buf){ const u=new Uint8Array(buf); let s=''; for(let i=0;i<u.length;i+=8192) s+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); return btoa(s); }
+function savedOutName(){ try{ return localStorage.getItem('vaderOut')||''; }catch(e){ return ''; } }
+async function listOuts(){
+  const sel=$('out');
+  if(NATIVE_OUT){
+    let devs=[]; try{ devs=JSON.parse(VaderNative.listOutputs()); }catch(e){}
+    const want=savedOutName(); sel.innerHTML='';
+    const o0=document.createElement('option'); o0.value=''; o0.textContent='Automático (lo decide Android)'; sel.appendChild(o0);
+    devs.forEach(d=>{ const o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; o.dataset.name=d.name; sel.appendChild(o); });
+    const m=[...sel.options].find(o=>o.dataset.name===want); sel.value=m?m.value:'';
+    $('outRow').hidden=(mode==='remote'||mode==='mic'); $('outHelp').hidden=true; $('outTools').hidden=$('outRow').hidden;
+    return;
+  }
+  try{
+    if(!ctx || typeof ctx.setSinkId!=='function'){ if(!/Android|iPhone|iPad/i.test(navigator.userAgent)) $('outHelp').hidden=false; return; }
+    const outs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audiooutput');
+    if(outs.length<2) return;
+    const cur=sel.value; sel.innerHTML='';
+    outs.forEach((d,i)=>{ const o=document.createElement('option'); o.value=d.deviceId==='default'?'':d.deviceId; o.textContent=d.label||('Salida '+(i+1)); sel.appendChild(o); });
+    if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
+    $('outRow').hidden=false;
+  }catch(e){}
+}
+window.onNativeDevices=()=>{ listOuts().then(()=>{ if(running) applyOutput(); }); };
+function routeTo(nat){
+  if(!ctx||!nodes.limiter) return;
+  try{ nodes.limiter.disconnect(); }catch(_){}
+  if(nat) nodes.limiter.connect(nodes.tap); else nodes.limiter.connect(ctx.destination);
+}
+function applyOutput(){
+  if(!NATIVE_OUT){ return; }
+  const v=$('out').value; const id=v?parseInt(v,10):0;
+  if(!running || isCtl() || !id){
+    if(natOut){ try{ VaderNative.stopOutput(); }catch(_){} natOut=false; routeTo(false); }
+    showRoute(); return;
+  }
+  if(!natOut){
+    let ok=false; try{ ok=VaderNative.startOutput(Math.round(ctx.sampleRate), id); }catch(_){}
+    if(!ok){ setStatus('No se pudo abrir esa salida. Usando la automática.'); $('out').value=''; return; }
+    natOut=true; natOutId=id; routeTo(true);
+  } else if(id!==natOutId){ try{ VaderNative.setOutput(id); }catch(_){} natOutId=id; }
+  showRoute();
+}
+const MODE_TXT={0:'normal (música)',1:'timbre',2:'llamada',3:'llamada por app',4:'llamada de red'};
+function micLabel(){ try{ const t=stream&&stream.getAudioTracks()[0]; return t?t.label:''; }catch(e){ return ''; } }
+function isBtLabel(t){ return /bluetooth|headset|bose|buds|earbud|sco|manos libres/i.test(t||''); }
+function showRoute(){
+  clearInterval(routeTimer);
+  const upd=()=>{
+    let txt='', warn='', st={};
+    if(NATIVE_OUT){ try{ st=JSON.parse(VaderNative.audioState()); }catch(_){} }
+    const inCall=st.mode===2||st.mode===3, btCall=inCall && (st.sco || st.commType===7 || st.commType===26);
+    if(natOut){
+      // si la salida nativa no está recibiendo sonido, volver a la automática para no quedarse en silencio
+      const w=st.written||0; if(w===lastWritten){ if(++stuck>=3){ stuck=0; try{ VaderNative.stopOutput(); }catch(_){} natOut=false; routeTo(false); setStatus('La salida elegida no recibió sonido. Volví a la salida automática.'); } } else { stuck=0; lastWritten=w; }
+      const r=st.routed||''; const want=($('out').selectedOptions[0]||{}).textContent||'';
+      txt=r ? ('🔊 Sonando en: '+r) : '🔊 Conectando la salida…';
+      if(r && want && r!==want) warn='Android mandó el sonido a '+r+' en vez de '+want+'.';
+    } else if(running && NATIVE_OUT){ txt='🔊 Salida automática de Android'+(st.routed?': '+st.routed:''); }
+    if(running && btCall) warn='Los audífonos están en MODO LLAMADA para el micrófono ('+(st.comm||'Bluetooth')+'). Mientras eso esté activo, Android pausa la música por Bluetooth, así que la JBL no suena y el sonido se va a los audífonos.';
+    $('routeInfo').textContent=txt; $('routeHero').textContent=txt; $('routeHero').hidden=!txt;
+    $('routeWarn').textContent=warn; $('routeWarn').hidden=!warn; $('fixMic').hidden=!(running && btCall);
+    if(NATIVE_OUT && running){
+      $('diag').textContent='Micrófono en uso: '+(micLabel()||'—')+'\nModo de audio de Android: '+(MODE_TXT[st.mode]??st.mode)+'\nBluetooth de llamada activo: '+(btCall?'sí ('+(st.comm||'')+')':'no')+'\nSalida real: '+(st.routed||'automática');
+      $('diag').hidden=false;
+    } else $('diag').hidden=true;
+  };
+  upd(); if(running && NATIVE_OUT) routeTimer=setInterval(upd,1500);
+}
+function useBuiltInMic(){
+  const opts=[...$('mic').options];
+  const pick=opts.find(o=>!isBtLabel(o.textContent) && /speaker|built|tel[eé]fono|phone|bottom|default|predeterminado/i.test(o.textContent)) || opts.find(o=>!isBtLabel(o.textContent));
+  if(!pick){ setStatus('No encontré el micrófono del celular en la lista.'); return; }
+  $('mic').value=pick.value; $('mic').dispatchEvent(new Event('change'));
+  setStatus('Cambiado al micrófono del celular: '+pick.textContent);
+}
+$('out').addEventListener('change',async()=>{
+  const opt=$('out').selectedOptions[0];
+  try{ localStorage.setItem('vaderOut', opt&&opt.dataset.name?opt.dataset.name:''); }catch(e){}
+  if(NATIVE_OUT){ applyOutput(); setStatus(opt&&opt.value?'Salida: '+opt.textContent:'Salida automática'); return; }
+  try{ await ctx.setSinkId($('out').value||''); setStatus('Salida cambiada'); }catch(e){ setStatus('No se pudo cambiar la salida'); }
+});
+$('fixMic').addEventListener('click',useBuiltInMic);
+$('outSwitch').addEventListener('click',()=>{ let ok=false; try{ ok=VaderNative.outputSwitcher(); }catch(_){} if(!ok) setStatus('Tu Android no tiene el selector de salida del sistema.'); });
+
+function showLatency(){ if(!ctx||!$('lat')) return; const ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000+24); $('lat').textContent='latencia ≈ '+ms+' ms\n+ Bluetooth'; }
+function setBtn(on){ $('btn').classList.toggle('on',on); $('btn').textContent=on?'Apagar':'Encender'; $('btn').setAttribute('aria-pressed',String(on)); updChip(); updPrep(); }
+function failMsg(err){
+  setStatus(err && err.name==='NotAllowedError' ? 'Permiso de micrófono negado. Actívalo en el candado de la barra del navegador.' :
+    (!window.isSecureContext ? 'Abre la app desde un enlace https.' : 'Error: '+(err&&err.message||err)));
+}
+let starting=false;
+async function start(){
+  if(starting||running) return; starting=true;
+  try{
+    if(mode==='mic'){ await startSender(); return; }
+    setStatus('Pidiendo permiso del micrófono…');
+    if(!ctx) await build();
+    await ctx.resume();
+    if(mode==='solo'){ await openMic(); openReceiver().catch(()=>{}); } else await openReceiver();
+    nodes.master.gain.setTargetAtTime(+$('vol').value, ctx.currentTime, 0.05);
+    running=true; setBtn(true);
+    if(mode==='solo') setStatus('Activo. Habla.');
+    if(breathSel!=='synth') startBed();
+    showLatency(); keepAwake(); await listOuts(); applyOutput(); broadcastState(); startWatch(); if(window.VaderNative) VaderNative.keepAlive(true);
+    setTimeout(autoCmds,400);
+  }catch(err){ failMsg(err); }finally{ starting=false; }
+}
+async function stop(){
+  running=false; if(natOut){ try{ VaderNative.stopOutput(); }catch(_){} natOut=false; routeTo(false); } showRoute(); remoteWanted=false; stopWatch(); clearTimeout(hostTimer); if(window.VaderNative) VaderNative.keepAlive(false); stopRec(true);
+  stopAll(); stopBed();
+  if(call){ try{call.close();}catch(e){} call=null; }
+  conns.forEach(c=>{ try{c.close();}catch(e){} }); conns.clear();
+  if(remoteConn){ try{remoteConn.close();}catch(e){} remoteConn=null; }
+  if(peer){ try{peer.destroy();}catch(e){} peer=null; }
+  if(remoteEl){ remoteEl.srcObject=null; remoteEl=null; }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  if(sendStream){ sendStream.getTracks().forEach(t=>t.stop()); sendStream=null; }
+  cancelAnimationFrame(meterRaf);
+  if(meterCtx){ try{ await meterCtx.close(); }catch(e){} meterCtx=null; }
+  if(ctx){ nodes.master.gain.value=0; await ctx.suspend(); }
+  setBtn(false); setStatus('Apagado'); $('lvl').style.width='0'; $('myCode').textContent='----'; $('bocinaBox').hidden=true;
+  if(wakeLock){ try{ wakeLock.release(); }catch(e){} wakeLock=null; }
+}
+async function keepAwake(){ try{ if('wakeLock' in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){} }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && (running||remoteConn)) keepAwake(); });
+
+// ---------- Conexión entre aparatos ----------
+function lowLatency(c){ try{ c.peerConnection.getReceivers().forEach(r=>{ if('jitterBufferTarget' in r) r.jitterBufferTarget=0; if('playoutDelayHint' in r) r.playoutDelayHint=0; }); }catch(e){} }
+// El código se queda fijo en este aparato: si la conexión se cae, la bocina vuelve con el MISMO código
+function stableCode(){ let c=null; try{ c=localStorage.getItem('vaderMyCode'); }catch(e){}
+  if(!/^\d{4}$/.test(c||'')){ c=String(Math.floor(1000+Math.random()*9000)); try{ localStorage.setItem('vaderMyCode',c); }catch(e){} } return c; }
+let hostRetry=0, hostTimer=0;
+function scheduleHostRestart(delay){
+  clearTimeout(hostTimer);
+  hostTimer=setTimeout(()=>{ if(!running||isCtl()) return; try{ peer&&peer.destroy(); }catch(_){} peer=null; openReceiver().catch(()=>{}); }, delay||3000);
+}
+function openReceiver(){
+  return new Promise((resolve,reject)=>{
+    if(!window.Peer){ reject(new Error('Sin conexión entre aparatos (revisa internet).')); return; }
+    myCode=stableCode();
+    const p=new Peer('vader-gt-'+myCode,{debug:0}); peer=p;
+    p.on('open',()=>{ hostRetry=0; $('myCode').textContent=myCode; $('bocinaBox').hidden=false;
+      if(mode==='bocina') setStatus(call&&call.open?'Micrófono conectado. Habla.':'Esperando al micrófono. Código: '+myCode); resolve(); });
+    p.on('connection',c=>{ conns.add(c); c.on('open',()=>sendState(c)); c.on('data',d=>{ if(d&&d.t==='ping') return; handleRemote(d); }); c.on('close',()=>conns.delete(c)); c.on('error',()=>conns.delete(c)); });
+    p.on('error',e=>{
+      if(e.type==='unavailable-id'){
+        // el servidor aún recuerda la conexión anterior de este mismo aparato: esperar y reintentar con el mismo código
+        hostRetry++;
+        if(hostRetry>12){ try{ localStorage.removeItem('vaderMyCode'); }catch(_){} hostRetry=0; }
+        setStatus('Recuperando el código '+myCode+'…'); scheduleHostRestart(4000); resolve(); return;
+      }
+      if(['network','server-error','socket-error','socket-closed','disconnected'].includes(e.type)){
+        setStatus('Conexión inestable. Reintentando…'); scheduleHostRestart(3000); resolve(); return;
+      }
+      if(mode==='bocina') setStatus('Error de conexión: '+e.type); resolve();
+    });
+    p.on('call',c=>{
+      if(call && call!==c){ try{call.close();}catch(_){} }
+      call=c; c.answer();
+      c.on('stream',rs=>{
+        if(src){ try{src.disconnect();}catch(_){} }
+        remoteEl=new Audio(); remoteEl.muted=true; remoteEl.srcObject=rs; remoteEl.play().catch(()=>{});
+        src=ctx.createMediaStreamSource(rs); src.connect(nodes.inGain); lowLatency(c); setStatus('Micrófono conectado. Habla.');
+      });
+      c.on('close',()=>{ if(running && call===c) setStatus('El micrófono se desconectó. Esperando… Código: '+myCode); });
+    });
+    p.on('disconnected',()=>setTimeout(()=>{ if(!running||peer!==p||p.destroyed||!p.disconnected) return; try{ p.reconnect(); }catch(_){ scheduleHostRestart(2000); } },0));
+  });
+}
+// Vigilante: revisa cada pocos segundos que todo siga conectado y lo repara solo
+let watchTimer=0, targetCode='';
+function startWatch(){ clearInterval(watchTimer); watchTimer=setInterval(watch,4000); }
+function stopWatch(){ clearInterval(watchTimer); watchTimer=0; }
+function pcDead(c){ const st=c&&c.peerConnection&&c.peerConnection.iceConnectionState; return !c || st==='failed' || st==='closed' || st==='disconnected'; }
+function ensureClientPeer(){
+  if(peer && !peer.destroyed){ if(peer.disconnected){ try{ peer.reconnect(); }catch(_){} } return peer.open; }
+  const p=new Peer({debug:0}); peer=p;
+  p.on('open',()=>watch());
+  p.on('error',e=>{ if(e.type==='peer-unavailable') setStatus('Buscando el código '+targetCode+'… (¿está encendido?)');
+    else if(['network','server-error','socket-error','socket-closed','disconnected'].includes(e.type)) setStatus('Conexión inestable. Reintentando…'); });
+  p.on('disconnected',()=>setTimeout(()=>{ if(peer!==p||p.destroyed||!p.disconnected) return; try{ p.reconnect(); }catch(_){} },0));
+  return false;
+}
+function watch(){
+  if(mode==='mic' && running){
+    if(!ensureClientPeer()) return;
+    if(!call || pcDead(call) || !call.open){
+      if(call){ try{ call.close(); }catch(_){} }
+      call=peer.call('vader-gt-'+targetCode, sendStream);
+      if(call){ call.on('close',()=>{}); setTimeout(()=>{ if(running&&call&&call.open) setStatus('Transmitiendo a la bocina '+targetCode+'.'); },1500); }
+    }
+    if(!remoteConn || !remoteConn.open) openCtl();
+  } else if(mode==='remote' && remoteWanted){
+    if(!ensureClientPeer()) return;
+    if(!remoteConn || !remoteConn.open) openCtl();
+    else { try{ remoteConn.send({t:'ping'}); }catch(_){} }
+  } else if(running && !isCtl()){
+    if(!peer || peer.destroyed) scheduleHostRestart(500);
+    else if(peer.disconnected){ try{ peer.reconnect(); }catch(_){ scheduleHostRestart(500); } }
+  }
+}
+function openCtl(){
+  if(remoteConn && !remoteConn.open && remoteConn._opening && Date.now()-remoteConn._opening<6000) return;
+  try{ remoteConn&&remoteConn.close(); }catch(_){}
+  const c=peer.connect('vader-gt-'+targetCode,{reliable:true}); c._opening=Date.now(); remoteConn=c;
+  c.on('open',()=>{ if(mode==='remote') setStatus('Conectado al código '+targetCode); try{ localStorage.setItem('vaderCode',targetCode); }catch(_){} updChip(); updPrep(); });
+  c.on('data',onHostData);
+  c.on('close',()=>{ if(remoteConn===c && mode==='remote'){ setStatus('Reconectando…'); $('btn').classList.remove('on'); } updChip(); });
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') watch(); });
+window.addEventListener('online',()=>watch());
+function restartMeter(an){
+  cancelAnimationFrame(meterRaf); const buf=new Float32Array(an.fftSize);
+  const tick=()=>{ an.getFloatTimeDomainData(buf); let p=0; for(const v of buf) p=Math.max(p,Math.abs(v));
+    $('lvl').style.width=Math.max(0,Math.min(100,(20*Math.log10(p+1e-7)+70)/70*100))+'%'; meterRaf=requestAnimationFrame(tick); };
+  tick();
+}
+async function startSender(){
+  const code=$('code').value.trim();
+  if(!/^\d{4}$/.test(code)){ setStatus('Escribe el código de 4 dígitos.'); return; }
+  if(!window.Peer){ setStatus('Sin conexión entre aparatos (revisa internet).'); return; }
+  setStatus('Pidiendo permiso del micrófono…');
+  sendStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1,deviceId:$('mic').value?{exact:$('mic').value}:undefined}});
+  listMics();
+  meterCtx=new (window.AudioContext||window.webkitAudioContext)();
+  meterSrc=meterCtx.createMediaStreamSource(sendStream);
+  const an=meterCtx.createAnalyser(); an.fftSize=512; meterSrc.connect(an);
+  restartMeter(an); running=true; setBtn(true); keepAwake();
+  targetCode=code; try{ localStorage.setItem('vaderCode',code); }catch(e){}
+  setStatus('Conectando con la bocina '+code+'…');
+  ensureClientPeer(); startWatch(); if(window.VaderNative) VaderNative.keepAlive(true);
+  setTimeout(autoCmds,400);
+}
+
+// ---------- Control remoto ----------
+function stateObj(){
+  const params={}; IDS.forEach(id=>params[id]=$(id).value);
+  const toggles={}; TOGGLES.forEach(id=>toggles[id]=$(id).checked);
+  const preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p;
+  return {t:'state',running,muted,vader,saber:!!saber,breathSel,musicId,lineId,params,toggles,preset,pads:pads.map(p=>p.name)};
+}
+function sendState(c){ try{ c.open&&c.send(stateObj()); }catch(e){} }
+function broadcastState(){ if(isCtl()) return; conns.forEach(sendState); }
+function handleRemote(d){
+  if(!d||typeof d!=='object') return;
+  if(d.t==='set'){
+    if(TOGGLES.includes(d.id)){ $(d.id).checked=!!d.v; save(); return; }
+    if(IDS.includes(d.id)){ $(d.id).value=d.v; apply(d.id); save(); }
+  } else if(d.t==='preset' && PRESETS[d.p]) applyPreset(d.p);
+  else if(d.t==='cmd') runCmd(d.a,d.arg);
+}
+function send(obj){ if(remoteConn&&remoteConn.open){ try{ remoteConn.send(obj); }catch(e){} } else { setStatus(remoteWanted||running?'Reconectando… intenta otra vez en un segundo':'No estás conectado. Escribe el código y toca Conectar.'); watch(); } }
+let remoteWanted=false;
+function connectRemote(){
+  const code=$('code').value.trim();
+  if(!/^\d{4}$/.test(code)){ setStatus('Escribe el código de 4 dígitos.'); return; }
+  if(!window.Peer){ setStatus('Sin conexión (revisa internet).'); return; }
+  targetCode=code; remoteWanted=true; setStatus('Conectando…');
+  if(remoteConn){ try{ remoteConn.close(); }catch(_){} remoteConn=null; }
+  ensureClientPeer(); startWatch(); keepAwake();
+}
+function onHostData(d){
+  if(!d) return;
+  if(d.t==='lvl'){ $('lvl').style.width=d.p+'%'; const led=$('led'); led.textContent=d.open?'● hablando':'● silencio'; led.classList.toggle('on',d.open); return; }
+  if(d.t!=='state') return;
+  Object.entries(d.params||{}).forEach(([k,v])=>{ if($(k)){ $(k).value=v; $(k+'O').textContent=fmt[k](+v); } });
+  $('volO2').textContent=fmt.vol(+d.params.vol); markSpk(); $('thrMark').style.left=((+d.params.thr+70)/70*100)+'%';
+  Object.entries(d.toggles||{}).forEach(([k,v])=>{ if($(k)) $(k).checked=!!v; });
+  document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===d.preset));
+  $('saber').classList.toggle('on',d.saber); $('saber').textContent=d.saber?'Apagar sable':'Encender sable'; $('sbSaber').classList.toggle('on',d.saber); $('sbSaber').textContent=d.saber?'Apagar sable':'Sable';
+  muted=d.muted; $('muteBtn').classList.toggle('on',d.muted); $('muteBtn').textContent=d.muted?'Activar voz':'Silenciar';
+  vader=d.vader; $('vaderBtn').classList.toggle('real',!d.vader); $('vaderBtn').textContent=d.vader?'Voz Vader':'Mi voz';
+  breathSel=d.breathSel; musicId=d.musicId; lineId=d.lineId; syncLibraryUI(); updChip(); updPrep();
+  if(mode==='remote'){ $('btn').classList.toggle('on',d.running); $('btn').textContent=d.running?'Conectado':'Bocina apagada'; }
+  renderPads(d.pads||[]);
+}
+
+// ---------- Mis sonidos (guardados en el navegador de la compu) ----------
+let padSrc=[];
+function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open('vader-pads',1); r.onupgradeneeded=()=>r.result.createObjectStore('pads'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+async function loadPadStore(){ try{ const db=await idb(); return await new Promise(res=>{ const q=db.transaction('pads').objectStore('pads').get('list'); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); }); }catch(e){ return []; } }
+async function savePadStore(list){ try{ const db=await idb(); db.transaction('pads','readwrite').objectStore('pads').put(list,'list'); }catch(e){} }
+async function initPads(){ pads=(await loadPadStore()).map(p=>({name:p.name,blob:p.blob,buf:null})); renderPads(); }
+async function decodePads(){ if(!ctx) return; for(const p of pads){ if(!p.buf){ try{ p.buf=await ctx.decodeAudioData(await p.blob.arrayBuffer()); }catch(e){} } } }
+function renderPads(names){
+  const list=names||pads.map(p=>p.name), box=$('pads'); box.innerHTML='';
+  if(!list.length){ box.innerHTML='<p class="help" style="grid-column:1/-1">Aún no hay sonidos propios.</p>'; return; }
+  list.forEach((n,i)=>box.appendChild(btn(n,null,'',()=>runCmd('pad',i))));
+}
+async function playPad(i){ const p=pads[i]; if(!p) return; if(!p.buf) await decodePads(); if(!p.buf) return;
+  const s=ctx.createBufferSource(); s.buffer=p.buf; s.connect(nodes.sfx); s.start(); padSrc.push(s); s.onended=()=>{ padSrc=padSrc.filter(x=>x!==s); }; }
+$('padFiles').addEventListener('change',async e=>{ const files=[...e.target.files]; if(!files.length) return;
+  files.forEach(f=>pads.push({name:f.name.replace(/\.[^.]+$/,'').slice(0,40),blob:f,buf:null}));
+  await savePadStore(pads.map(p=>({name:p.name,blob:p.blob}))); renderPads(); decodePads(); broadcastState(); e.target.value=''; });
+$('padClear').addEventListener('click',async()=>{ pads=[]; await savePadStore([]); renderPads(); broadcastState(); });
+
+// ---------- Ajustes ----------
+function apply(id){
+  const v=+$(id).value; $(id+'O').textContent=fmt[id](v);
+  if(id==='vol') $('volO2').textContent=fmt.vol(v);
+  if(id==='thr') $('thrMark').style.left=((v+70)/70*100)+'%';
+  if(id.startsWith('eq')) markSpk();
+  if(!ctx) return;
+  const n=nodes, t=ctx.currentTime;
+  switch(id){
+    case 'semi': n.shift.parameters.get('ratio').setValueAtTime(Math.pow(2,v/12),t); break;
+    case 'helmet': n.combFb.gain.setTargetAtTime(v,t,0.03); n.combOut.gain.setTargetAtTime(0.25+v,t,0.03); break;
+    case 'dist': n.shaper.curve=curve(v); n.shPost.gain.setTargetAtTime(1-v*0.35,t,0.03); break;
+    case 'rev': n.verbWet.gain.setTargetAtTime(v,t,0.03); break;
+    case 'breathVol': n.breathVol.gain.setTargetAtTime(v,t,0.03); n.bedVol.gain.setTargetAtTime(v,t,0.03); break;
+    case 'sfxVol': n.sfx.gain.setTargetAtTime(v,t,0.03); break;
+    case 'voiceVol': n.voiceVol.gain.setTargetAtTime(v,t,0.03); break;
+    case 'musicVol': n.musicVol.gain.setTargetAtTime(v,t,0.03); break;
+    case 'inGain': n.inGain.gain.setTargetAtTime(v,t,0.03); break;
+    case 'thr': if(!breathing && !bedUp) n.gate.port.postMessage({thr:v}); break;
+    case 'vol': if(running) n.master.gain.setTargetAtTime(v,t,0.03); break;
+    case 'eqLow': n.eqLow.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
+    case 'eqMid': n.eqMid.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
+    case 'eqHigh': n.eqHigh.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
+  }
+}
+function applyAll(){ IDS.forEach(apply); }
+// al subir una banda, se baja un poco el total para que no sature la bocina
+function eqTrim(){ if(!ctx) return; const mx=Math.max(0,+$('eqLow').value,+$('eqMid').value,+$('eqHigh').value);
+  nodes.eqTrim.gain.setTargetAtTime(Math.pow(10,-mx*0.6/20),ctx.currentTime,0.05); }
+// puntos de partida por tipo de bocina (estimados: ajusta de oído)
+const SPK={plano:[0,0,0], jbl:[-2,1,2], chica:[0,3,1], cel:[-6,4,0], grande:[3,0,1]};
+function markSpk(){ const cur=[+$('eqLow').value,+$('eqMid').value,+$('eqHigh').value];
+  document.querySelectorAll('#spkPresets .chip').forEach(c=>{ const v=SPK[c.dataset.s]; c.classList.toggle('sel',!!v&&v.every((x,i)=>x===cur[i])); }); }
+function setSpk(k){ const v=SPK[k]; if(!v) return; ['eqLow','eqMid','eqHigh'].forEach((id,i)=>{ $(id).value=v[i]; $(id).dispatchEvent(new Event('input')); }); }
+function applyPreset(name){
+  document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===name));
+  Object.entries(PRESETS[name]).forEach(([k,v])=>{ $(k).value=v; apply(k); }); save();
+}
+function save(){
+  try{ const s={}; IDS.forEach(id=>s[id]=$(id).value); TOGGLES.forEach(id=>s[id]=$(id).checked); s.aec=$('aec').checked; s.breathSel=breathSel;
+    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader7',JSON.stringify(s)); }catch(e){}
+  broadcastState();
+}
+function load(){
+  try{ const s=JSON.parse(localStorage.getItem('vader7')||'null'); if(!s) return;
+    IDS.forEach(id=>{ if(s[id]!=null) $(id).value=s[id]; }); TOGGLES.forEach(id=>{ if(s[id]!=null) $(id).checked=!!s[id]; });
+    $('aec').checked=!!s.aec; if(s.breathSel) breathSel=s.breathSel;
+    if(s.preset) document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===s.preset));
+  }catch(e){}
+}
+IDS.forEach(id=>$(id).addEventListener('input',()=>{ apply(id); if(isCtl()){ send({t:'set',id,v:$(id).value}); return; } save(); }));
+TOGGLES.forEach(id=>$(id).addEventListener('change',()=>{ if(isCtl()){ send({t:'set',id,v:$(id).checked}); return; } save(); }));
+$('aec').addEventListener('change',async()=>{ save(); if(running&&mode==='solo'){ try{ await openMic(); }catch(e){} } });
+$('presets').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b) return; if(isCtl()){ send({t:'preset',p:b.dataset.p}); return; } applyPreset(b.dataset.p); });
+
+// ---------- Botones ----------
+$('btn').addEventListener('click',()=>{ if(mode==='remote'){ connectRemote(); return; } running?stop():start(); });
+$('vaderBtn').addEventListener('click',()=>runCmd('vader'));
+$('muteBtn').addEventListener('click',()=>runCmd('mute'));
+$('volBtn').addEventListener('click',()=>{ $('volSheet').hidden=false; });
+$('volClose').addEventListener('click',()=>{ $('volSheet').hidden=true; });
+$('volSheet').addEventListener('click',e=>{ if(e.target.id==='volSheet') $('volSheet').hidden=true; });
+document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{ const [id,d]=b.dataset.step.split(':'); const el=$(id);
+  el.value=Math.max(+el.min,Math.min(+el.max,Math.round((+el.value+ +d)*20)/20)); el.dispatchEvent(new Event('input')); }));
+$('musicQuick').addEventListener('click',()=>{ if(man.music[0]) runCmd('music',man.music[0].id); });
+$('saber').addEventListener('click',()=>runCmd('saber'));
+$('swing').addEventListener('click',()=>runCmd('swing'));
+$('clash').addEventListener('click',()=>runCmd('clash'));
+$('breathNow').addEventListener('click',()=>runCmd('breath'));
+$('stopAll').addEventListener('click',()=>runCmd('stopAll'));
+$('tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('sel',x===b));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('show',t.id==='tab-'+b.dataset.tab));
+  window.scrollTo({top:0}); });
+
+// ---------- Modos ----------
+const HELP={
+  solo:'Esta compu capta tu voz y la saca por la bocina. Al encender aparece un código para controlarla desde el celular.',
+  remote:'Este celular controla la compu: frases, efectos, música, voz y volumen. Escribe el código de la compu y toca Conectar.',
+  bocina:'Prueba de dos celulares: este va conectado a la JBL. Toca Encender y escribe el código en el otro celular. Desde aquí también controlas todo.',
+  mic:'Prueba de dos celulares: este va con tus audífonos. Escribe el código de la bocina y toca Encender; luego en Ajustes elige tus audífonos como micrófono. Desde aquí también controlas todo.'
+};
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('#modes .chip').forEach(c=>c.classList.toggle('sel',c.dataset.m===m));
+  $('modeHelp').textContent=HELP[m];
+  setTimeout(()=>{ updChip(); updPrep(); },0);
+  $('modeName').textContent={solo:'Un solo aparato',remote:'Control remoto',bocina:'Bocina',mic:'Micrófono + control'}[m];
+  $('bocinaBox').hidden=true; $('micBox').hidden=!(m==='mic'||m==='remote');
+  document.body.classList.remove('nodock');
+  $('micRow').hidden=m==='remote'; if(NATIVE_OUT){ $('outRow').hidden=(m==='remote'||m==='mic'); $('outTools').hidden=$('outRow').hidden; } ['aecRow','padLoad'].forEach(id=>$(id).hidden=(m==='remote'||m==='mic')); if(m==='remote'||m==='mic'){ $('outRow').hidden=true; $('outHelp').hidden=true; }
+  $('btn').textContent=m==='remote'?'Conectar':'Encender';
+  if(m==='remote'||m==='mic'){ try{ const c=localStorage.getItem('vaderCode'); if(c) $('code').value=c; }catch(e){} }
+  setStatus(m==='remote'?'Escribe el código de la compu y toca Conectar':m==='mic'?'Escribe el código y toca Encender':'Toca Encender');
+  try{ localStorage.setItem('vaderMode',m); }catch(e){}
+}
+$('modes').addEventListener('click',async e=>{ const b=e.target.closest('.chip'); if(!b||b.dataset.m===mode) return; if(running||remoteConn) await stop(); setMode(b.dataset.m); });
+
+// ---------- Comandos de voz ----------
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null, recOn=false, lastCmd={};
+function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+let toastT=0;
+function toast(msg,warn){ const t=$('toast'); t.textContent=msg; t.className='toast'+(warn?' warn':''); t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{ t.hidden=true; },warn?2600:1700); }
+function heardFlash(){ ['chipCmd','showCmd'].forEach(id=>{ const e=$(id); e.classList.add('heard'); setTimeout(()=>e.classList.remove('heard'),1500); }); }
+function fire(a,arg,label){
+  const k=a+(arg||''), now=performance.now(); if(lastCmd[k] && now-lastCmd[k]<2500) return; lastCmd[k]=now;
+  runCmd(a,arg); $('cmdLog').textContent='✓ '+label;
+  toast('✓ '+(a==='line'?label:(CMD_DONE[a]||label))); heardFlash();
+  if(navigator.vibrate){ try{ navigator.vibrate([40,60,40]); }catch(_){} }
+  const row=document.getElementById('row-'+a); if(row){ row.classList.add('hit'); setTimeout(()=>row.classList.remove('hit'),1500); }
+}
+function bestLine(q){
+  const qw=norm(q).split(' ').filter(w=>w.length>2); if(!qw.length) return null;
+  let best=null, bs=0;
+  man.lines.forEach(l=>{ const lw=new Set(norm(l.es).split(' ')); const hit=qw.filter(w=>lw.has(w)).length; const sc=hit/qw.length + (hit/Math.max(lw.size,1))*0.3; if(sc>bs){ bs=sc; best=l; } });
+  return bs>=0.5?best:null;
+}
+const CMD_DEFS=[
+  {a:'intro',   label:'Entrada: Marcha Imperial + respiración', def:'que comience el espectáculo'},
+  {a:'musicPlay',label:'Poner la Marcha Imperial', def:'el imperio ha llegado, contemplen'},
+  {a:'musicStop',label:'Quitar la música', def:'silencio'},
+  {a:'saberOn', label:'Encender el sable', def:'en guardia, prepárate para morir'},
+  {a:'swing',   label:'Movimiento del sable', def:'observa'},
+  {a:'clash',   label:'Choque del sable', def:'insolente'},
+  {a:'saberOff',label:'Apagar el sable', def:'es suficiente, ya basta'},
+  {a:'breath',  label:'Respirar', def:'siento tu presencia'},
+  {a:'stopAll', label:'Callar todo (música, sable, frases)', def:'retírense'},
+  {a:'vaderOff',label:'Pasar a mi voz real', def:'déjame verte con mis propios ojos'},
+  {a:'vaderOn', label:'Volver a la voz de Vader', def:'así debe ser'},
+  {a:'muteOn',  label:'Silenciar la bocina (hablo sin amplificar)', def:'tiempo fuera'},
+  {a:'muteOff', label:'Volver a sonar por la bocina', def:'continuemos'},
+  {a:'volUp',   label:'Subir volumen', def:'escuchen bien, atención'},
+  {a:'volDown', label:'Bajar volumen', def:'más despacio'}
+];
+const CMD_DONE={intro:'Entrada',musicPlay:'Marcha Imperial',musicStop:'Música fuera',saberOn:'Sable encendido',swing:'Sable',clash:'Choque',saberOff:'Sable apagado',breath:'Respiración',stopAll:'Todo callado',vaderOff:'Voz real',vaderOn:'Voz Vader',muteOn:'Bocina silenciada',muteOff:'Bocina activa',volUp:'Volumen +',volDown:'Volumen −'};
+let cmdPhrases={};
+function loadCmdPhrases(){ try{ cmdPhrases=JSON.parse(localStorage.getItem('vaderCmds')||'{}'); }catch(e){ cmdPhrases={}; }
+  CMD_DEFS.forEach(c=>{ if(cmdPhrases[c.a]==null) cmdPhrases[c.a]=c.def; }); }
+function saveCmdPhrases(){ try{ localStorage.setItem('vaderCmds',JSON.stringify(cmdPhrases)); }catch(e){} }
+function renderCmdEdit(){
+  const box=$('cmdEdit'); box.innerHTML='';
+  CMD_DEFS.forEach(c=>{ const row=document.createElement('div'); row.className='row cmdRow'; row.id='row-'+c.a;
+    const lab=document.createElement('label'); lab.textContent=c.label; lab.htmlFor='cmd-'+c.a;
+    const inp=document.createElement('input'); inp.id='cmd-'+c.a; inp.type='text'; inp.value=cmdPhrases[c.a]||''; inp.placeholder='(sin comando)';
+    inp.style.cssText='grid-column:1/-1;padding:10px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;font-size:15px';
+    inp.addEventListener('change',()=>{ cmdPhrases[c.a]=inp.value; saveCmdPhrases(); refreshGrammar(); });
+    row.appendChild(lab); row.appendChild(document.createElement('output')); row.appendChild(inp); box.appendChild(row); });
+  renderCheat();
+}
+function renderCheat(){
+  const box=$('cheatList'); if(!box) return; box.innerHTML='';
+  CMD_DEFS.forEach(c=>{ const ph=(cmdPhrases[c.a]||'').split(',').map(x=>x.trim()).filter(Boolean); if(!ph.length) return;
+    const d=document.createElement('div'); const b=document.createElement('b'); b.textContent=c.label; const sp=document.createElement('span');
+    sp.innerHTML=ph.map(x=>'“'+x+'”').join(' <i>o</i> '); d.appendChild(b); d.appendChild(sp); box.appendChild(d); });
+  if($('lineKwOn').checked && $('lineKw').value.trim()){ const d=document.createElement('div'); const b=document.createElement('b'); b.textContent='Frase grabada';
+    const sp=document.createElement('span'); sp.innerHTML='“'+$('lineKw').value.trim()+' …” <i>+ las palabras de la frase (ej. “'+$('lineKw').value.trim()+' yo soy tu padre”)</i>'; d.appendChild(b); d.appendChild(sp); box.appendChild(d); }
+}
+function handleSpeech(raw,conf){
+  const s=' '+norm(raw)+' '; if(!s.trim()) return;
+  $('cmdLog').textContent='Escuché: "'+raw.trim()+'"'+(conf!=null?' ('+Math.round(conf*100)+'%)':'');
+  if(conf!=null && conf<0.6){ $('cmdLog').textContent+=' · no muy claro, repite más despacio'; return; }
+  if($('lineKwOn').checked){ const kw=norm($('lineKw').value);
+    if(kw && s.includes(' '+kw+' ')){ const l=bestLine(s.split(' '+kw+' ').slice(1).join(' ')); if(l){ fire('line',l.id,'Frase: '+l.es); return; } } }
+  for(const c of CMD_DEFS){
+    const opts=(cmdPhrases[c.a]||'').split(',').map(norm).filter(x=>x.length>=3);
+    if(opts.some(o=>s.includes(' '+o+' '))){ fire(c.a, c.a==='musicPlay'&&man.music[0]?man.music[0].id:null, c.label); return; }
+  }
+}
+let vModel=null, vRec=null, vNode=null, vSink=null, vOwnStream=null, vOwnCtx=null, vReady=false;
+// el modelo español conoce las palabras con tilde: se conservan aquí (la comparación después las ignora)
+function normG(x){ return (x||'').toLowerCase().replace(/[^a-z0-9áéíóúüñ ]/g,' ').replace(/\s+/g,' ').trim(); }
+function grammarList(){
+  const g=new Set();
+  CMD_DEFS.forEach(c=>(cmdPhrases[c.a]||'').split(',').map(normG).filter(x=>x.length>=3).forEach(x=>g.add(x)));
+  if($('lineKwOn').checked){ const kw=normG($('lineKw').value); if(kw) man.lines.forEach(l=>g.add(kw+' '+normG(l.es))); }
+  g.add('[unk]'); return [...g];
+}
+function voiceTap(){
+  if(!isCtl() && ctx && nodes.inGain) return {ac:ctx, node:nodes.inGain};
+  if(mode==='mic' && meterCtx && meterSrc) return {ac:meterCtx, node:meterSrc};
+  return null;
+}
+async function startVosk(){
+  $('cmdLog').textContent='Preparando reconocimiento de voz sin internet… (la primera vez tarda unos segundos)';
+  if(!vModel){ vModel=await Vosk.createModel(new URL('vosk-es.tgz',location.href).href); }
+  let tap=voiceTap();
+  if(!tap){
+    vOwnStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:true,autoGainControl:true,channelCount:1}});
+    vOwnCtx=new (window.AudioContext||window.webkitAudioContext)(); await vOwnCtx.resume();
+    tap={ac:vOwnCtx, node:vOwnCtx.createMediaStreamSource(vOwnStream)};
+  }
+  buildVoskRecognizer(tap.ac.sampleRate);
+  vNode=tap.ac.createScriptProcessor(4096,1,1); vSink=tap.ac.createGain(); vSink.gain.value=0;
+  vNode.onaudioprocess=e=>{ if(vRec&&recOn){ try{ vRec.acceptWaveform(e.inputBuffer); }catch(_){} } };
+  tap.node.connect(vNode); vNode.connect(vSink); vSink.connect(tap.ac.destination);
+  vReady=true; $('cmdLog').textContent='Escuchando comandos (sin internet).'; updCmdChip();
+}
+function buildVoskRecognizer(rate){
+  try{ vRec&&vRec.remove(); }catch(_){}
+  vRec=new vModel.KaldiRecognizer(rate, JSON.stringify(grammarList()));
+  try{ vRec.setWords(true); }catch(_){}
+  vRec.on('result',m=>{ const r=m.result||{}; const t=(r.text||'').replace(/\[unk\]/g,' ').trim(); if(!t) return;
+    let conf=null; if(Array.isArray(r.result)&&r.result.length){ const ws=r.result.filter(w=>w.word!=='[unk]'); if(ws.length) conf=ws.reduce((a,w)=>a+(w.conf==null?1:w.conf),0)/ws.length; }
+    handleSpeech(t,conf); });
+}
+async function startRec(){
+  recOn=true;
+  if(window.Vosk){
+    if(!running && !isCtl()){ $('cmdLog').textContent='Primero toca Encender; luego activa los comandos.'; $('voiceCmd').checked=false; recOn=false; return; }
+    try{ await startVosk(); }catch(e){ recOn=false; $('voiceCmd').checked=false; $('cmdLog').textContent='No se pudo iniciar el reconocimiento de voz: '+(e.message||e); }
+    return;
+  }
+  if(!SR){ recOn=false; $('voiceCmd').checked=false; $('cmdLog').textContent='Este navegador no tiene reconocimiento de voz. Usa la app de Android o Google Chrome.'; return; }
+  rec=new SR(); rec.lang='es-MX'; rec.continuous=true; rec.interimResults=false; rec.maxAlternatives=1;
+  rec.onresult=e=>{ for(let i=e.resultIndex;i<e.results.length;i++){ if(e.results[i].isFinal) handleSpeech(e.results[i][0].transcript); } };
+  rec.onerror=e=>{ if(e.error==='no-speech') return; if(e.error==='not-allowed'||e.error==='service-not-allowed'){ recOn=false; $('voiceCmd').checked=false; $('cmdLog').textContent='Sin permiso de micrófono o sin servicio de voz.'; }
+    else if(e.error==='network'){ $('cmdLog').textContent='Los comandos de voz del navegador necesitan internet.'; }
+    else if(e.error==='audio-capture'){ $('cmdLog').textContent='El navegador no puede usar el micrófono para comandos mientras la voz está activa. Usa la app de Android.'; } };
+  rec.onend=()=>{ if(recOn){ setTimeout(()=>{ try{ rec.start(); }catch(_){} },250); } };
+  try{ rec.start(); $('cmdLog').textContent='Escuchando comandos…'; updCmdChip(); }catch(e){}
+}
+function stopRec(silent){
+  recOn=false; try{ rec&&rec.stop(); }catch(e){}
+  try{ vNode&&vNode.disconnect(); }catch(_){} vNode=null;
+  if(vOwnStream){ vOwnStream.getTracks().forEach(t=>t.stop()); vOwnStream=null; } if(vOwnCtx){ try{ vOwnCtx.close(); }catch(_){} vOwnCtx=null; }
+  vReady=false; if(silent) $('voiceCmd').checked=false; $('cmdLog').textContent='Apagado.'; updCmdChip();
+}
+function updCmdChip(){ const on=recOn; ['chipCmd','showCmd'].forEach(id=>{ const e=$(id); if(e) e.hidden=!on; }); }
+function refreshGrammar(){ if(vReady && vModel && vNode) buildVoskRecognizer(vNode.context.sampleRate); }
+loadCmdPhrases(); renderCmdEdit();
+try{ const k=JSON.parse(localStorage.getItem('vaderKw')||'null'); if(k){ $('lineKwOn').checked=!!k.on; if(k.kw) $('lineKw').value=k.kw; } }catch(e){}
+['lineKwOn','lineKw'].forEach(id=>$(id).addEventListener('change',()=>{ refreshGrammar(); renderCheat(); try{ localStorage.setItem('vaderKw',JSON.stringify({on:$('lineKwOn').checked,kw:$('lineKw').value})); }catch(e){} }));
+$('voiceCmd').addEventListener('change',()=>{ $('voiceCmd').checked?startRec():stopRec(); });
+try{ $('cmdAuto').checked=localStorage.getItem('vaderCmdAuto')==='1'; }catch(e){}
+$('cmdAuto').addEventListener('change',()=>{ try{ localStorage.setItem('vaderCmdAuto',$('cmdAuto').checked?'1':'0'); }catch(e){} });
+function autoCmds(){ if($('cmdAuto').checked && !recOn && (window.Vosk||SR)){ $('voiceCmd').checked=true; startRec(); } }
+$('spkPresets').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(b) setSpk(b.dataset.s); });
+$('cheatOpen').addEventListener('click',()=>{ renderCheat(); $('cheat').hidden=false; });
+$('cheatClose').addEventListener('click',()=>{ $('cheat').hidden=true; });
+$('cheat').addEventListener('click',e=>{ if(e.target===$('cheat')) $('cheat').hidden=true; });
+
+// ---------- Favoritas, buscador, estado, preparar, modo show ----------
+let favIds=['f01','f08','f10','f03','f37','f39','f16','f17'];
+try{ const fv=JSON.parse(localStorage.getItem('vaderFavs')||'null'); if(Array.isArray(fv)) favIds=fv; }catch(e){}
+function toggleFav(id){
+  favIds=favIds.includes(id)?favIds.filter(x=>x!==id):[...favIds,id];
+  try{ localStorage.setItem('vaderFavs',JSON.stringify(favIds)); }catch(e){}
+  renderLibrary();
+}
+function normQ(x){ return (x||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+function filterLines(){
+  const q=normQ($('q').value.trim());
+  document.querySelectorAll('#tab-frases .line').forEach(b=>{ b.hidden=!!q && !normQ(b.textContent).includes(q); });
+  document.querySelectorAll('#tab-frases section').forEach(sec=>{ if(sec.classList.contains('findBar')) return; const any=[...sec.querySelectorAll('.line')].some(b=>!b.hidden); sec.hidden=!any; });
+}
+$('q').addEventListener('input',filterLines);
+$('favEdit').addEventListener('change',()=>{ $('tab-frases').classList.toggle('favEditing',$('favEdit').checked); setStatus($('favEdit').checked?'Toca las frases para marcar o quitar ★':'Favoritas guardadas'); });
+function updChip(){
+  const c=$('chipSt'); if(!c) return;
+  let t='Apagado', k='off';
+  if(mode==='remote'){ const on=remoteConn&&remoteConn.open; t=on?'Conectado':'Sin conectar'; k=on?'link':'off'; if(on&&muted){ t='Silenciado'; k='mute'; } else if(on&&!vader){ t='Voz normal'; k='real'; } }
+  else if(running){ if(muted){ t='Silenciado'; k='mute'; } else if(!vader){ t='Voz normal'; k='real'; } else { t='Vader activo'; k='live'; } }
+  c.textContent=t; c.className='chipSt '+k; const sc=$('showChip'); if(sc){ sc.textContent=t; sc.className='chipSt '+k; }
+  $('sbVader').textContent=vader?'Voz Vader':'Mi voz'; $('sbVader').classList.toggle('real',!vader);
+  $('sbMute').textContent=muted?'Activar voz':'Silenciar'; $('sbMute').classList.toggle('on',muted);
+}
+function updPrep(){
+  const names={solo:'Un solo aparato',remote:'Control remoto',bocina:'Bocina (2 celulares)',mic:'Micrófono + control'};
+  const mic=($('mic').selectedOptions[0]||{}).textContent||'predeterminado';
+  const out=$('outRow').hidden?'':(' · Bocina: '+(($('out').selectedOptions[0]||{}).textContent||'automática'));
+  $('prepSum').textContent=(running||(mode==='remote'&&remoteConn&&remoteConn.open))
+    ? names[mode]+(mode==='remote'?'':' · Mic: '+mic+out)+'  (toca para cambiar)'
+    : 'Elige cómo lo vas a usar, el micrófono y la bocina';
+  if(running) $('prep').open=false; else if(mode!=='remote') $('prep').open=true;
+}
+$('testSnd').addEventListener('click',()=>{ if(!running && mode!=='remote'){ setStatus('Primero toca Encender, luego Probar sonido.'); return; } runCmd('line','f37'); setStatus('Probando: debe sonar "Impresionante" por la bocina'); });
+// Modo show
+$('showOpen').addEventListener('click',()=>{ $('showMode').hidden=false; updChip(); try{ document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} });
+$('showGrid').addEventListener('click',e=>{ const b=e.target.closest('.sb'); if(!b) return; const a=b.dataset.a;
+  if(a.startsWith('fav')){ if(b.dataset.id) runCmd('line',b.dataset.id); return; }
+  if(a==='musicT'){ if(man.music[0]) runCmd('music',man.music[0].id); return; }
+  runCmd(a); });
+(()=>{ let t=0; const ex=$('showExit');
+  const down=e=>{ e.preventDefault(); ex.classList.add('hold'); t=setTimeout(()=>{ ex.classList.remove('hold'); $('showMode').hidden=true; try{ document.fullscreenElement&&document.exitFullscreen(); }catch(_){} },800); };
+  const up=()=>{ clearTimeout(t); ex.classList.remove('hold'); };
+  ex.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(k=>ex.addEventListener(k,up)); })();
+// Vibración corta al tocar (confirma sin mirar)
+document.addEventListener('click',e=>{ if(e.target.closest('button,.big,.chip') && navigator.vibrate){ try{ navigator.vibrate(12); }catch(_){} } },true);
+
+// ---------- Inicio ----------
+load(); applyAll();
+let startMode=/Android|iPhone|iPad/i.test(navigator.userAgent)?'remote':'solo';
+try{ startMode=localStorage.getItem('vaderMode')||startMode; }catch(e){}
+setMode(startMode);
+loadManifest(); initPads(); if(NATIVE_OUT) listOuts();
+// indicador de segundo plano (solo en la app de Android)
+setInterval(()=>{ const d=$('bgState'); if(!window.VaderNative||!VaderNative.isAlive){ d.className='dot'; return; }
+  let on=false; try{ on=VaderNative.isAlive(); }catch(e){}
+  d.className='dot '+((running||remoteWanted)?(on?'on':'off'):''); d.title=on?'Sigue funcionando con la pantalla apagada':'Segundo plano inactivo'; },2000);
+if(!window.isSecureContext) setStatus('Abre la app desde un enlace https.');
+if('serviceWorker' in navigator && !/VaderApp/.test(navigator.userAgent)){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+
+</script>
+</body>
+</html>
