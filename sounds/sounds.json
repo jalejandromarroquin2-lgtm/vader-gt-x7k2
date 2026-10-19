@@ -1,0 +1,380 @@
+{
+ "breaths": [
+  {
+   "id": "b1",
+   "name": "Respiración clásica (ciclo 4.8 s)",
+   "file": "sounds/b1.mp3",
+   "len": 57.54
+  },
+  {
+   "id": "b2",
+   "name": "Respiración lenta (ciclo 6 s)",
+   "file": "sounds/b2.mp3",
+   "len": 23.86
+  },
+  {
+   "id": "b3",
+   "name": "Respiración herido (ciclo 3.7 s)",
+   "file": "sounds/b3.mp3",
+   "len": 14.78
+  }
+ ],
+ "saber": {
+  "file": "sounds/saber.mp3",
+  "loopStart": 3.0,
+  "loopEnd": 12.4
+ },
+ "music": [
+  {
+   "id": "m1",
+   "name": "Marcha Imperial",
+   "file": "sounds/marcha.mp3"
+  }
+ ],
+ "lines": [
+  {
+   "id": "f01",
+   "es": "Yo soy tu padre",
+   "en": "I am your father",
+   "group": "Frases famosas",
+   "file": "sounds/f01.mp3",
+   "dur": 3.4
+  },
+  {
+   "id": "f03",
+   "es": "Me molesta tu falta de fe",
+   "en": "I find your lack of faith disturbing",
+   "group": "Frases famosas",
+   "file": "sounds/f03.mp3",
+   "dur": 2.4
+  },
+  {
+   "id": "f08",
+   "es": "Únete a mí y juntos gobernaremos la galaxia como padre e hijo",
+   "en": "Join me, and together we can rule the galaxy as father and son",
+   "group": "Frases famosas",
+   "file": "sounds/f08.mp3",
+   "dur": 6.1
+  },
+  {
+   "id": "f10",
+   "es": "No conoces el poder del lado oscuro",
+   "en": "You don't know the power of the dark side",
+   "group": "Frases famosas",
+   "file": "sounds/f10.mp3",
+   "dur": 4.2
+  },
+  {
+   "id": "f41",
+   "es": "Si conocieras el poder del lado oscuro",
+   "en": "If you only knew the power of the dark side",
+   "group": "Frases famosas",
+   "file": "sounds/f41.mp3",
+   "dur": 3.9
+  },
+  {
+   "id": "f42",
+   "es": "Es tu destino",
+   "en": "It is your destiny",
+   "group": "Frases famosas",
+   "file": "sounds/f42.mp3",
+   "dur": 2.6
+  },
+  {
+   "id": "f31",
+   "es": "La Fuerza es intensa en este",
+   "en": "The Force is strong with this one",
+   "group": "Frases famosas",
+   "file": "sounds/f31.mp3",
+   "dur": 1.6
+  },
+  {
+   "id": "f16",
+   "es": "Ya te tengo",
+   "en": "I have you now",
+   "group": "Frases famosas",
+   "file": "sounds/f16.mp3",
+   "dur": 1.4
+  },
+  {
+   "id": "f17",
+   "es": "¡Noooo!",
+   "en": "Noooo!",
+   "group": "Frases famosas",
+   "file": "sounds/f17.mp3",
+   "dur": 4.8
+  },
+  {
+   "id": "f37",
+   "es": "Impresionante",
+   "en": "Impressive",
+   "group": "Frases famosas",
+   "file": "sounds/f37.mp3",
+   "dur": 1.9
+  },
+  {
+   "id": "f39",
+   "es": "Muy impresionante",
+   "en": "Most impressive",
+   "group": "Frases famosas",
+   "file": "sounds/f39.mp3",
+   "dur": 3.2
+  },
+  {
+   "id": "f40",
+   "es": "No me obligues a destruirte",
+   "en": "Don't make me destroy you",
+   "group": "Frases famosas",
+   "file": "sounds/f40.mp3",
+   "dur": 2.6
+  },
+  {
+   "id": "f24",
+   "es": "No subestimes la Fuerza",
+   "en": "Don't underestimate the Force",
+   "group": "Frases famosas",
+   "file": "sounds/f24.mp3",
+   "dur": 2.4
+  },
+  {
+   "id": "f25",
+   "es": "Tus poderes son débiles, anciano",
+   "en": "Your powers are weak, old man",
+   "group": "Frases famosas",
+   "file": "sounds/f25.mp3",
+   "dur": 2.2
+  },
+  {
+   "id": "f34",
+   "es": "La Fuerza está contigo, joven Skywalker",
+   "en": "The Force is with you, young Skywalker",
+   "group": "Frases famosas",
+   "file": "sounds/f34.mp3",
+   "dur": 3.3
+  },
+  {
+   "id": "f35",
+   "es": "Pero aún no eres un Jedi",
+   "en": "But you are not a Jedi yet",
+   "group": "Frases famosas",
+   "file": "sounds/f35.mp3",
+   "dur": 5.2
+  },
+  {
+   "id": "f11",
+   "es": "Sí",
+   "en": "Yes",
+   "group": "Respuestas cortas",
+   "file": "sounds/f11.mp3",
+   "dur": 0.9
+  },
+  {
+   "id": "f12",
+   "es": "No",
+   "en": "No",
+   "group": "Respuestas cortas",
+   "file": "sounds/f12.mp3",
+   "dur": 1.1
+  },
+  {
+   "id": "f13",
+   "es": "¿Qué?",
+   "en": "What?",
+   "group": "Respuestas cortas",
+   "file": "sounds/f13.mp3",
+   "dur": 0.5
+  },
+  {
+   "id": "f14",
+   "es": "Bien",
+   "en": "Good",
+   "group": "Respuestas cortas",
+   "file": "sounds/f14.mp3",
+   "dur": 0.7
+  },
+  {
+   "id": "f02",
+   "es": "Así es",
+   "en": "That is correct",
+   "group": "Respuestas cortas",
+   "file": "sounds/f02.mp3",
+   "dur": 1.1
+  },
+  {
+   "id": "f15",
+   "es": "Como desees",
+   "en": "As you wish",
+   "group": "Respuestas cortas",
+   "file": "sounds/f15.mp3",
+   "dur": 1.1
+  },
+  {
+   "id": "f29",
+   "es": "Disculpa aceptada",
+   "en": "Apology accepted",
+   "group": "Respuestas cortas",
+   "file": "sounds/f29.mp3",
+   "dur": 2.0
+  },
+  {
+   "id": "f43",
+   "es": "Buen trabajo",
+   "en": "Good work",
+   "group": "Respuestas cortas",
+   "file": "sounds/f43.mp3",
+   "dur": 0.8
+  },
+  {
+   "id": "f20",
+   "es": "Así que has aceptado la verdad",
+   "en": "So, you have accepted the truth",
+   "group": "Respuestas cortas",
+   "file": "sounds/f20.mp3",
+   "dur": 2.2
+  },
+  {
+   "id": "f44",
+   "es": "¡Hermana!",
+   "en": "Sister!",
+   "group": "Respuestas cortas",
+   "file": "sounds/f44.mp3",
+   "dur": 1.0
+  },
+  {
+   "id": "f18",
+   "es": "Eso es (no estoy seguro)",
+   "en": "That's it (?)",
+   "group": "Respuestas cortas",
+   "file": "sounds/f18.mp3",
+   "dur": 1.1
+  },
+  {
+   "id": "f19",
+   "es": "No, capitán (no estoy seguro)",
+   "en": "No, Captain (?)",
+   "group": "Respuestas cortas",
+   "file": "sounds/f19.mp3",
+   "dur": 1.4
+  },
+  {
+   "id": "f21",
+   "es": "Sonido corto (sin identificar)",
+   "en": "(?)",
+   "group": "Respuestas cortas",
+   "file": "sounds/f21.mp3",
+   "dur": 2.1
+  },
+  {
+   "id": "f38",
+   "es": "Quejido corto (sin identificar)",
+   "en": "(?)",
+   "group": "Respuestas cortas",
+   "file": "sounds/f38.mp3",
+   "dur": 1.1
+  },
+  {
+   "id": "f30",
+   "es": "No me falles otra vez",
+   "en": "Don't fail me again",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f30.mp3",
+   "dur": 1.9
+  },
+  {
+   "id": "f26",
+   "es": "Me has fallado por última vez",
+   "en": "You have failed me for the last time",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f26.mp3",
+   "dur": 4.0
+  },
+  {
+   "id": "f06",
+   "es": "Estoy cambiando el trato. Reza para que no lo cambie más",
+   "en": "I am altering the deal. Pray I don't alter it any further",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f06.mp3",
+   "dur": 5.3
+  },
+  {
+   "id": "f05",
+   "es": "Quizá crees que te tratan injustamente",
+   "en": "Perhaps you think you're being treated unfairly",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f05.mp3",
+   "dur": 3.6
+  },
+  {
+   "id": "f04",
+   "es": "Quiero saber qué pasó con los planos que te enviaron",
+   "en": "I want to know what happened to the plans they sent you",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f04.mp3",
+   "dur": 3.1
+  },
+  {
+   "id": "f07",
+   "es": "Eres parte de la Alianza Rebelde y una traidora",
+   "en": "You are part of the Rebel Alliance and a traitor",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f07.mp3",
+   "dur": 2.9
+  },
+  {
+   "id": "f09",
+   "es": "El Emperador no comparte tu optimismo sobre la situación",
+   "en": "The Emperor does not share your optimistic appraisal of the situation",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f09.mp3",
+   "dur": 4.9
+  },
+  {
+   "id": "f22",
+   "es": "Y ahora, Alteza, hablaremos de dónde está tu base rebelde secreta",
+   "en": "And now, Your Highness, we will discuss the location of your hidden rebel base",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f22.mp3",
+   "dur": 5.0
+  },
+  {
+   "id": "f23",
+   "es": "No te enorgullezcas de este terror tecnológico que has construido",
+   "en": "Don't be too proud of this technological terror you've constructed",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f23.mp3",
+   "dur": 3.9
+  },
+  {
+   "id": "f27",
+   "es": "¿Qué ordenáis, mi maestro?",
+   "en": "What is thy bidding, my master?",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f27.mp3",
+   "dur": 2.5
+  },
+  {
+   "id": "f28",
+   "es": "Nada de desintegraciones",
+   "en": "No disintegrations",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f28.mp3",
+   "dur": 2.1
+  },
+  {
+   "id": "f32",
+   "es": "Nos honraría que se uniera a nosotros",
+   "en": "We would be honored if you would join us",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f32.mp3",
+   "dur": 3.0
+  },
+  {
+   "id": "f33",
+   "es": "Es todo tuyo, cazarrecompensas",
+   "en": "He's all yours, bounty hunter",
+   "group": "Órdenes y amenazas",
+   "file": "sounds/f33.mp3",
+   "dur": 2.6
+  }
+ ]
+}
