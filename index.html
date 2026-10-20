@@ -13,386 +13,258 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
-/* Una sola columna; todo lo que se toca seguido vive abajo, al alcance del pulgar */
+/* Diseño para una mano y con la máscara puesta: pocos botones, grandes, texto grande y alto contraste */
 :root{
-  --bg:#0b0b0d; --panel:#141317; --panel2:#1b1a1f; --line:#2a2830; --fg:#ece9f1; --mute:#8f8a98;
-  --red:#e0142b; --red-dim:#4d0b14; --ok:#3ad07a; --blue:#3d8bff;
+  --bg:#08080a; --panel:#131216; --panel2:#1c1b21; --line:#2e2c35; --fg:#f4f2f7; --mute:#a9a4b3;
+  --red:#ff1f3a; --red-dim:#55101b; --ok:#41e087; --ok-dim:#0f3a22; --blue:#4b95ff; --blue-dim:#0f2546; --amber:#ffcf66;
   --display:"Saira Condensed","Arial Narrow",system-ui,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
-  --dock:136px;
+  --dock:84px;
   color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html,body{background:var(--bg);color:var(--fg)}
-body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
-.wrap{max-width:560px;margin:0 auto;padding-block:14px calc(var(--dock) + 28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
-body.nodock .wrap{padding-bottom:40px}
-header{display:flex;justify-content:space-between;align-items:center;gap:10px}
-h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.06em;text-transform:uppercase;margin:0;line-height:1}
-h1 b{color:var(--red)}
-.lat{font-family:var(--mono);font-size:10px;color:var(--mute);text-align:right;white-space:pre-line}
-.top{display:flex;gap:12px;align-items:center}
-#btn{flex:0 0 auto;width:96px;height:96px;border-radius:50%;border:2px solid var(--line);background:radial-gradient(circle at 50% 40%,#1d1b21,#0d0c0f);
-  color:var(--fg);font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;line-height:1.05;padding:6px}
-#btn.on{border-color:var(--red);color:#fff;box-shadow:0 0 28px 2px rgba(224,20,43,.45)}
-.topinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-#status{font-family:var(--mono);font-size:12px;color:var(--mute);min-height:1.4em}
-.meter{position:relative;height:12px;background:#08080a;border:1px solid var(--line);border-radius:3px;overflow:hidden}
-#lvl{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#6b0c17,var(--red));transition:width .05s linear}
-#thrMark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--fg);opacity:.7}
-.gateLed{font-family:var(--mono);font-size:11px;color:var(--mute);display:flex;justify-content:space-between}
-.gateLed span.on{color:var(--ok)}
-section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px}
-h2{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;margin:0;color:var(--mute)}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font:600 14px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:9px 12px;cursor:pointer;min-height:42px}
-.chip.sel{border-color:var(--red);background:var(--red-dim)}
-.big{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;text-align:left;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:8px;
-  padding:10px 12px;min-height:58px;cursor:pointer;font:600 16px/1.2 system-ui,-apple-system,sans-serif;width:100%}
-.big small{font:400 12px/1.2 var(--mono);color:var(--mute)}
-.big:active{transform:scale(.98)}
-.big.on{border-color:var(--red);background:var(--red-dim)}
-.big.playing{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
-.big.c{align-items:center;text-align:center;font-family:var(--display);font-size:18px;letter-spacing:.06em;text-transform:uppercase}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.list{display:flex;flex-direction:column;gap:8px}
-.row{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
-.row label{font-size:14px}
-.row output{font-family:var(--mono);font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums}
-.row input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--red);height:28px}
-.check{display:flex;gap:10px;align-items:center;font-size:14px;min-height:40px}
-.check input{width:22px;height:22px;accent-color:var(--red);flex:0 0 auto}
-.help{font-size:13px;color:var(--mute);margin:0}
-.code{font-family:var(--mono);font-size:40px;font-weight:600;letter-spacing:.2em;text-align:center}
-.codeIn input{width:100%;font-family:var(--mono);font-size:26px;letter-spacing:.3em;text-align:center;padding:10px;background:#08080a;color:var(--fg);border:1px solid var(--line);border-radius:6px}
-select.sel{grid-column:1/-1;width:100%;padding:10px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;font-size:14px}
-details{font-size:14px;color:var(--mute)}
-details summary{cursor:pointer;color:var(--fg);font-family:var(--display);letter-spacing:.1em;text-transform:uppercase;min-height:36px;display:flex;align-items:center}
-details ul{padding-left:18px;margin:6px 0 0;display:flex;flex-direction:column;gap:6px}
-.tab{display:none;flex-direction:column;gap:14px}
-.tab.show{display:flex}
-/* Dock inferior: pestañas + controles de uso constante */
-.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(14,13,17,.97);border-top:1px solid var(--line);
-  padding:8px max(10px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));backdrop-filter:blur(8px)}
-.dock-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-.tabs button{background:transparent;color:var(--mute);border:1px solid var(--line);border-radius:6px;font:700 13px var(--display);letter-spacing:.08em;text-transform:uppercase;min-height:40px;cursor:pointer}
-.tabs button.sel{color:#fff;border-color:var(--red);background:var(--red-dim)}
-.ctl{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
-.ctl > button,.vol button{min-height:58px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 15px/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
-#vaderBtn.real{border-color:var(--blue);background:#0f2546}
-#muteBtn.on{border-color:var(--red);background:var(--red-dim)}
-.vol{display:grid;grid-template-columns:1fr auto 1fr;gap:4px;align-items:center}
-.vol button{font-size:26px;min-height:58px}
-#volO2{font-family:var(--mono);font-size:13px;min-width:44px;text-align:center}
-body.nodock .dock{display:none}
-button:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--red);outline-offset:2px}
-.hero{position:relative}
-.warn{margin:0;font-size:13px;line-height:1.35;color:#ffcf66;background:#2a2108;border:1px solid #5a4510;border-radius:8px;padding:8px 10px}
-.diag{margin:0;font:12px/1.5 var(--mono);color:var(--mute);white-space:pre-wrap;background:#08080a;border:1px solid var(--line);border-radius:6px;padding:8px}
-.route{font:600 12px var(--mono);color:var(--ok);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.modeLine{display:flex;align-items:center;gap:8px;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--line);display:none}
-.dot.on{display:inline-block;background:var(--ok)}
-.dot.off{display:inline-block;background:#d9a400}
-.codeBox{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px;border:1px dashed var(--line);border-radius:8px}
-.codeBox span{font-size:13px;color:var(--mute)}
-.codeBox b{font-family:var(--mono);font-size:26px;letter-spacing:.18em}
-.big.hot{min-height:72px;font-size:22px}
-.big.danger{border-color:#5a1a22}
-#modes .big{text-transform:none;font:600 16px/1.2 system-ui,-apple-system,sans-serif;letter-spacing:0;align-items:flex-start}
-.txt{grid-column:1/-1;padding:10px;font-size:15px}
-.sheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end}
-.sheet-in{width:100%;max-width:560px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:14px 14px 0 0;
-  padding:14px max(14px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;max-height:88vh;overflow:auto;overscroll-behavior:contain}
-.sheet-head{position:sticky;top:0;background:var(--panel);z-index:1;margin:-4px 0;padding:4px 0}
-.sheet-head{display:flex;justify-content:space-between;align-items:center}
-.x{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-size:18px;cursor:pointer}
-.vrow{display:grid;grid-template-columns:1fr 48px;grid-template-areas:"lab out" "ctl ctl";gap:6px 8px;align-items:center}
-.vrow span{grid-area:lab;font-size:15px;font-weight:600}
-.vrow output{grid-area:out;font-family:var(--mono);font-size:13px;color:var(--mute);text-align:right}
-.vrow{grid-template-columns:48px 1fr 48px 52px;grid-template-areas:"lab lab lab out" "m r p p"}
-.vrow button{width:48px;height:48px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font-size:24px;cursor:pointer}
-.vrow button:first-of-type{grid-area:m}
-.vrow input{grid-area:r;width:100%;accent-color:var(--red);height:32px}
-.vrow button:last-of-type{grid-area:p;justify-self:start}
-.vrow.master{border-top:1px solid var(--line);padding-top:10px}
-.vrow span small{font-weight:400;color:var(--mute);font-size:12px}
-.eqHead{border-top:1px solid var(--line);padding-top:12px}
-.eqHead h2{margin:0 0 4px}
-.eqHead .help{margin:0}
-#volBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-#volBtn small{font:400 12px var(--mono);color:var(--mute);text-transform:none;letter-spacing:0}
-details.prep{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:0}
-details.prep>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;min-height:56px;text-transform:none;font-family:system-ui,-apple-system,sans-serif;letter-spacing:0;color:var(--fg)}
-details.prep>summary::-webkit-details-marker{display:none}
-.prepT{font:700 14px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--fg)}
-.prepT::after{content:' ▾';color:var(--mute)}
-details.prep:not([open]) .prepT::after{content:' ▸'}
-.prepSum{font-size:13px;color:var(--mute);line-height:1.3}
-.prepBody{display:flex;flex-direction:column;gap:10px;padding:0 12px 12px}
-.prepBody h3{margin:6px 0 0;font:700 13px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
-.chipSt{font:700 11px var(--display);letter-spacing:.1em;padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--fg)}
+body{margin:0;font:18px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+.wrap{max-width:560px;margin:0 auto;padding-block:10px calc(var(--dock) + 24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:12px}
+button{font:inherit;color:inherit}
+
+/* Barra de arriba: encender + estado (siempre visible) */
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:8px;display:flex;flex-direction:column;gap:6px}
+.topRow{display:flex;gap:10px;align-items:stretch}
+.chipsCol{display:flex;flex-direction:column;gap:6px;justify-content:center;align-items:flex-start;flex:0 0 auto;max-width:44%}
+#btn{flex:1;min-width:0;min-height:76px;border-radius:16px;border:3px solid var(--line);background:var(--panel2);color:var(--fg);
+  font:800 34px/1 var(--display);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+#btn.on{border-color:var(--red);background:var(--red-dim);color:#fff;box-shadow:0 0 26px rgba(255,31,58,.4)}
+.stateLine{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chipSt{white-space:nowrap;font:800 17px var(--display);letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:99px;border:2px solid var(--line)}
 .chipSt.off{background:#1d1c21;color:var(--mute)}
-.chipSt.live{background:#0f3a22;border-color:#1f7a45;color:#7ff0ab}
-.chipSt.mute{background:var(--red-dim);border-color:var(--red);color:#ffb3bd}
-.chipSt.real{background:#0f2546;border-color:var(--blue);color:#a9ccff}
-.chipSt.link{background:#2a2108;border-color:#5a4510;color:#ffcf66}
-.show-btn{border-style:dashed}
-.findBar{position:sticky;top:0;z-index:5}
-.line.fav::before{content:'★ ';color:#ffcf66}
-.favEditing .line{border-style:dashed}
-.showMode{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;gap:8px;
-  padding:calc(10px + env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px))}
-.showGrid{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px;min-height:0}
-.sb{border-radius:14px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);font:700 20px/1.15 var(--display);letter-spacing:.04em;text-transform:uppercase;padding:8px;cursor:pointer;overflow:hidden}
-.sb.on{border-color:var(--red);background:var(--red-dim)}
-.sb.real{border-color:var(--blue);background:#0f2546}
-.sb.playing{border-color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
-.sb:active{transform:scale(.97)}
-.showExit{min-height:52px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--mute);font:600 14px system-ui,sans-serif;position:relative;overflow:hidden}
-.showExit.hold::after{content:'';position:absolute;inset:0;background:rgba(224,20,43,.35);transform-origin:left;animation:fillx .8s linear forwards}
-@keyframes fillx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-.chipSt.cmd{background:#101b2e;border-color:#2b4d85;color:#9fc3ff}
-.chipSt.cmd.heard{background:#0f3a22;border-color:#1f7a45;color:#7ff0ab}
-.showTop{display:flex;gap:6px;align-items:center;justify-content:center;min-height:22px}
-.toast{position:fixed;left:50%;top:calc(44px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:80;max-width:92vw;padding:12px 18px;border-radius:12px;
-  background:#0f3a22;border:1px solid #1f7a45;color:#c8ffd9;font:700 16px/1.2 var(--display);letter-spacing:.05em;text-transform:uppercase;box-shadow:0 8px 30px rgba(0,0,0,.6);pointer-events:none;animation:toastin .18s ease-out}
-.toast.warn{background:#2a2108;border-color:#5a4510;color:#ffcf66}
+.chipSt.live{background:var(--ok-dim);border-color:#1f7a45;color:#8ff5b8}
+.chipSt.mute{background:var(--red-dim);border-color:var(--red);color:#ffc0c8}
+.chipSt.real{background:var(--blue-dim);border-color:var(--blue);color:#b9d6ff}
+.chipSt.link{background:#2a2108;border-color:#5a4510;color:var(--amber)}
+.chipSt.cmd{background:#101b2e;border-color:#2b4d85;color:#9fc3ff;font-size:15px}
+.chipSt.cmd.heard{background:var(--ok-dim);border-color:#1f7a45;color:#8ff5b8}
+#status{font-size:15px;color:var(--mute);min-height:1.3em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meter{position:relative;height:14px;background:#000;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+#lvl{position:absolute;inset:0 auto 0 0;width:0;background:linear-gradient(90deg,#7a0d1b,var(--red));transition:width .05s linear}
+#lvl.open{background:linear-gradient(90deg,#137a3e,var(--ok))}
+#thrMark{position:absolute;top:-2px;bottom:-2px;width:3px;background:var(--fg);opacity:.6}
+.warn{margin:0;padding:12px;border-radius:12px;background:#2a1408;border:2px solid #7a3d10;color:#ffd0a8;font-size:16px}
+.codeBox{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:2px dashed var(--line);border-radius:12px;font-size:16px;color:var(--mute)}
+.codeBox b{font:800 40px var(--mono);letter-spacing:.12em;color:var(--fg)}
+.codeIn input{width:100%;font:800 34px var(--mono);letter-spacing:.3em;text-align:center;padding:14px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--fg)}
+
+/* Botones grandes de la pantalla Show */
+.tab{display:none;flex-direction:column;gap:12px}
+.tab.show{display:flex}
+.pad{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.k{min-height:104px;border-radius:16px;border:2px solid var(--line);background:var(--panel2);color:var(--fg);cursor:pointer;
+  font:800 26px/1.05 var(--display);letter-spacing:.06em;text-transform:uppercase;padding:10px;display:flex;align-items:center;justify-content:center;text-align:center}
+.k:active{transform:scale(.97)}
+.k.wide{grid-column:1/-1}
+.k.on{border-color:var(--red);background:var(--red-dim);color:#fff}
+.k.real{border-color:var(--blue);background:var(--blue-dim)}
+.k.playing{border-color:var(--blue);box-shadow:inset 0 0 0 3px var(--blue)}
+.k.stop{border-color:#6a1a24;color:#ffb3bd}
+.k.line{font:700 23px/1.15 system-ui,sans-serif;text-transform:none;letter-spacing:0;min-height:78px}
+#phrases{grid-template-columns:1fr}
+h2{font:800 18px var(--display);letter-spacing:.14em;text-transform:uppercase;margin:6px 2px 0;color:var(--mute)}
+.volRow{display:grid;grid-template-columns:96px 1fr 96px;gap:10px;align-items:center}
+.volRow .k{min-height:84px;font-size:40px}
+.volRow output{text-align:center;font:800 30px var(--display);letter-spacing:.06em}
+.volRow output small{display:block;font:600 14px var(--display);letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+
+/* Ajustes: tarjetas simples */
+section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:12px}
+section>h2{margin:0}
+.help{margin:0;color:var(--mute);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:800 18px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--panel2);color:var(--fg);border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:56px}
+.chip.sel{border-color:var(--red);background:var(--red-dim)}
+.modeList{display:grid;gap:8px}
+.modeList .chip{text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.modeList .chip small{font:500 14px system-ui,sans-serif;text-transform:none;letter-spacing:0;color:var(--mute)}
+.big{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;text-align:center;background:var(--panel2);color:var(--fg);border:2px solid var(--line);border-radius:12px;
+  padding:12px;min-height:64px;cursor:pointer;font:800 20px/1.15 var(--display);letter-spacing:.06em;text-transform:uppercase;width:100%}
+.big small{font:500 14px system-ui,sans-serif;text-transform:none;letter-spacing:0;color:var(--mute)}
+.big.playing{border-color:var(--blue);box-shadow:inset 0 0 0 2px var(--blue)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label{font-weight:600}
+.sel{width:100%;font-size:17px;padding:14px 12px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--fg)}
+.sel.txt{font-size:17px}
+.check{display:flex;align-items:center;gap:12px;font-size:17px;min-height:48px;cursor:pointer}
+.check input{width:28px;height:28px;accent-color:var(--red);flex:0 0 auto}
+.vrow{display:grid;grid-template-columns:56px 1fr 56px;grid-template-areas:"lab lab out" "m r p";gap:6px 10px;align-items:center}
+.vrow span{grid-area:lab;font-size:17px;font-weight:600}
+.vrow span small{font-weight:400;color:var(--mute);font-size:14px}
+.vrow output{grid-area:out;font:600 15px var(--mono);color:var(--mute);text-align:right}
+.vrow button{width:56px;height:56px;border-radius:12px;border:2px solid var(--line);background:var(--panel2);color:var(--fg);font-size:28px;cursor:pointer}
+.vrow button:first-of-type{grid-area:m}
+.vrow input{grid-area:r;width:100%;accent-color:var(--red);height:36px}
+.vrow button:last-of-type{grid-area:p}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+details>summary{cursor:pointer;padding:16px;font:800 18px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:' ▾'}
+details[open]>summary::after{content:' ▴'}
+details>.inner{padding:0 14px 14px;display:flex;flex-direction:column;gap:12px}
+details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:flex;flex-direction:column;gap:6px}
+.diag{margin:0;white-space:pre-wrap;font:13px/1.45 var(--mono);color:var(--mute);background:#000;border:1px solid var(--line);border-radius:10px;padding:10px}
+.cmdRow{display:flex;flex-direction:column;gap:6px;padding:4px;border-radius:10px}
+.cmdRow label{font-weight:600}
+.cmdRow input{padding:14px 12px;font-size:17px;background:var(--panel2);color:var(--fg);border:2px solid var(--line);border-radius:12px}
+.cmdRow.hit{outline:3px solid #1f7a45;background:var(--ok-dim)}
+.cmdRow output{display:none}
+
+/* Pestañas abajo: solo dos */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(8,8,10,.96);border-top:1px solid var(--line);
+  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tabs button{min-height:64px;border-radius:14px;border:2px solid var(--line);background:var(--panel2);color:var(--mute);font:800 22px var(--display);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.tabs button.sel{border-color:var(--red);background:var(--red-dim);color:#fff}
+
+.toast{position:fixed;left:50%;top:calc(110px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:80;max-width:92vw;padding:16px 22px;border-radius:14px;
+  background:var(--ok-dim);border:2px solid #1f7a45;color:#c8ffd9;font:800 24px/1.15 var(--display);letter-spacing:.05em;text-transform:uppercase;box-shadow:0 8px 30px rgba(0,0,0,.6);pointer-events:none;animation:toastin .18s ease-out;text-align:center}
+.toast.warn{background:#2a2108;border-color:#5a4510;color:var(--amber)}
 @keyframes toastin{from{opacity:0;transform:translate(-50%,-8px)}to{opacity:1;transform:translate(-50%,0)}}
-.cmdRow.hit{outline:2px solid #1f7a45;border-radius:8px;background:#0f3a22}
-.cheat{display:grid;gap:6px}
-.cheat div{display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;align-items:center}
-.cheat b{font:700 13px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
-.cheat span{font:600 15px system-ui,sans-serif;color:var(--fg)}
-.cheat span i{font-style:normal;color:var(--mute);font-size:12px}
+@media (max-width:360px){ .k{font-size:22px;min-height:92px} #btn{font-size:28px} }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <!-- TARJETA FIJA: encendido, estado y código -->
-  <section class="hero">
-    <div class="top">
+  <!-- ARRIBA: encender y estado -->
+  <header class="bar">
+    <div class="topRow">
       <button id="btn" type="button" aria-pressed="false">Encender</button>
-      <div class="topinfo">
-        <div class="modeLine"><span class="chipSt off" id="chipSt">Apagado</span><span class="chipSt cmd" id="chipCmd" hidden>🎙 comandos</span><span id="modeName">Un solo aparato</span><span class="dot" id="bgState" title="Segundo plano"></span></div>
-        <div id="status">Toca Encender</div>
-        <div class="meter"><div id="lvl"></div><div id="thrMark"></div></div>
-        <div class="gateLed"><span>micrófono</span><span id="led">● silencio</span></div>
-        <div class="route" id="routeHero" hidden></div>
+      <div class="chipsCol">
+        <span class="chipSt off" id="chipSt">Apagado</span>
+        <span class="chipSt cmd" id="chipCmd" hidden>🎙 Comandos</span>
+        <span class="chipSt off" id="modeName" hidden></span>
       </div>
     </div>
+    <div id="status">Toca Encender</div>
+    <div class="meter" aria-hidden="true"><div id="lvl"></div><div id="thrMark"></div></div>
     <p class="warn" id="routeWarn" hidden></p>
-    <button class="big c" id="fixMic" type="button" hidden>Usar micrófono del celular (que suene la JBL)</button>
-    <div id="bocinaBox" class="codeBox" hidden><span>Código para conectar otro celular</span><b id="myCode">----</b></div>
-    <div id="micBox" class="codeIn" hidden><input id="code" inputmode="numeric" maxlength="4" placeholder="Código de 4 dígitos" aria-label="Código"></div>
-  </section>
+    <button class="big" id="fixMic" type="button" hidden>Usar el micrófono del celular</button>
+    <div id="bocinaBox" class="codeBox" hidden><span>Código para el otro celular</span><b id="myCode">----</b></div>
+    <div id="micBox" class="codeIn" hidden><input id="code" inputmode="numeric" maxlength="4" placeholder="Código" aria-label="Código de 4 dígitos"></div>
+  </header>
 
-  <!-- INICIO: lo que se usa durante el show -->
-  <div class="tab show" id="tab-inicio">
-    <details class="prep" id="prep" open>
-      <summary><span class="prepT">Preparar</span><span class="prepSum" id="prepSum">Elige cómo lo vas a usar, el micrófono y la bocina</span></summary>
-      <div class="prepBody">
-        <h3>1 · Cómo lo vas a usar</h3>
-      <div class="list" id="modes">
-        <button class="big chip sel" data-m="solo" type="button">Un solo aparato<small>Micrófono y bocina en este celular o compu</small></button>
-        <button class="big chip" data-m="remote" type="button">Control remoto<small>Este celular controla otro aparato</small></button>
-        <button class="big chip" data-m="bocina" type="button">Bocina (2 celulares)<small>Este va con la JBL y recibe la voz</small></button>
-        <button class="big chip" data-m="mic" type="button">Micrófono + control (2 celulares)<small>Este va con los audífonos y manda la voz</small></button>
-      </div>
-      <p class="help" id="modeHelp"></p>
-        <h3>2 · Micrófono</h3>
-      <div class="row" id="micRow"><label for="mic">Micrófono</label><output></output>
-        <select id="mic" class="sel"><option value="">Micrófono predeterminado</option></select></div>
-        <h3>3 · Bocina</h3>
-      <div class="row" id="outRow" hidden><label for="out">Salida de sonido (bocina)</label><output></output>
-        <select id="out" class="sel"><option value="">Salida predeterminada</option></select></div>
-      <div id="outTools" hidden>
-        <p class="help" id="routeInfo"></p>
-        <pre class="diag" id="diag" hidden></pre>
-        <p class="help">Elige la bocina aquí. Si eliges un aparato, la app manda el sonido como música a ese aparato aunque los audífonos estén en modo llamada.</p>
-        <button class="big c" id="outSwitch" type="button">Abrir selector de salida de Android</button>
-      </div>
-      <p class="help" id="outHelp" hidden>Este navegador no deja elegir la salida aquí. En Mac: Ajustes del Sistema → Sonido → Salida → elige la JBL (o usa Chrome).</p>
-        <button class="big c" id="testSnd" type="button">Probar sonido</button>
-      </div>
-    </details>
-    <section>
-      <h2>Sable de luz</h2>
-      <button class="big c hot" id="saber" type="button">Encender sable</button>
-      <div class="grid2">
-        <button class="big c" id="swing" type="button">Movimiento</button>
-        <button class="big c" id="clash" type="button">Choque</button>
-      </div>
-    </section>
-    <section>
-      <h2>Frases favoritas</h2>
-      <div class="grid2" id="favs"></div>
-      <p class="help">Cámbialas en la pestaña <b>Frases → Elegir favoritas</b>.</p>
-    </section>
-    <section>
-      <h2>Ambiente</h2>
-      <div class="grid2">
-        <button class="big c" id="musicQuick" type="button">▶ Marcha Imperial</button>
-        <button class="big c" id="breathNow" type="button">Respirar ahora</button>
-      </div>
-      <button class="big c danger" id="stopAll" type="button">Callar todo</button>
-    </section>
-    <button class="big c show-btn" id="showOpen" type="button">Modo show: pantalla simple<small>Botones gigantes para usar con una mano y sin mirar</small></button>
+  <!-- SHOW: solo lo que se usa en vivo -->
+  <div class="tab show" id="tab-show">
+    <div class="pad">
+      <button class="k" id="vaderBtn" type="button">Voz Vader</button>
+      <button class="k" id="muteBtn" type="button">Silenciar</button>
+      <button class="k wide" id="saber" type="button">Encender sable</button>
+      <button class="k" id="swing" type="button">Movimiento</button>
+      <button class="k" id="clash" type="button">Choque</button>
+      <button class="k" id="breathNow" type="button">Respirar</button>
+      <button class="k" id="musicQuick" type="button">Marcha</button>
+    </div>
+    <h2>Frases</h2>
+    <div class="pad" id="phrases"></div>
+    <div class="pad"><button class="k wide stop" id="stopAll" type="button">Callar todo</button></div>
+    <div class="volRow">
+      <button class="k" type="button" data-step="vol:-0.1" aria-label="Bajar volumen">−</button>
+      <output><span id="volO2">100%</span><small>Volumen</small></output>
+      <button class="k" type="button" data-step="vol:0.1" aria-label="Subir volumen">+</button>
+    </div>
   </div>
 
-  <!-- FRASES -->
-  <div class="tab" id="tab-frases">
-    <section class="findBar">
-      <input id="q" class="sel txt" type="search" placeholder="Buscar frase (ej. padre, fuerza, fe)" aria-label="Buscar frase">
-      <label class="check"><input id="favEdit" type="checkbox"> Elegir favoritas (toca una frase para marcarla ★)</label>
-    </section>
-    <section><h2>Frases famosas</h2><div class="list" id="g-famosas"></div></section>
-    <section><h2>Respuestas cortas</h2><div class="grid2" id="g-cortas"></div></section>
-    <section><h2>Órdenes y amenazas</h2><div class="list" id="g-ordenes"></div></section>
-  </div>
-
-  <!-- SONIDOS: respiración, música, mis sonidos -->
-  <div class="tab" id="tab-sonidos">
-    <section>
-      <h2>Respiración</h2>
-      <p class="help">Elige cuál suena cuando te callas.</p>
-      <div class="list" id="breathList"></div>
-      <label class="check"><input id="autoBreath" type="checkbox" checked> Respirar solo cuando me callo</label>
-      <label class="check" id="valveRow"><input id="valve" type="checkbox" checked> Válvula del regulador (solo respiración sintética)</label>
-    </section>
-    <section>
-      <h2>Música</h2>
-      <div class="list" id="musicList"></div>
-      <label class="check"><input id="duckMusic" type="checkbox" checked> Bajar la música cuando hablo</label>
-    </section>
-    <section>
-      <h2>Mis sonidos</h2>
-      <div class="grid2" id="pads"></div>
-      <div id="padLoad" class="grid2">
-        <label class="big c" for="padFiles">Cargar sonidos</label>
-        <input id="padFiles" type="file" accept="audio/*" multiple hidden>
-        <button class="big c" id="padClear" type="button">Borrar mis sonidos</button>
-      </div>
-    </section>
-  </div>
-
-  <!-- AJUSTES -->
+  <!-- AJUSTES: lo necesario a la vista, lo demás plegado -->
   <div class="tab" id="tab-ajustes">
     <section>
-      <h2>Voz de Vader</h2>
-      <div class="chips" id="presets">
-        <button class="chip sel" data-p="clasico" type="button">Clásico</button>
-        <button class="chip" data-p="grave" type="button">Más grave</button>
-        <button class="chip" data-p="metal" type="button">Casco metálico</button>
+      <h2>Cómo lo uso</h2>
+      <div class="modeList" id="modes">
+        <button class="chip sel" data-m="solo" type="button">Todo en este celular<small>Micrófono y bocina conectados aquí</small></button>
+        <button class="chip" data-m="remote" type="button">Control remoto<small>Este celular controla otro aparato</small></button>
+        <button class="chip" data-m="bocina" type="button">Bocina (2 celulares)<small>Este va con la bocina y recibe la voz</small></button>
+        <button class="chip" data-m="mic" type="button">Micrófono (2 celulares)<small>Este capta la voz y la manda</small></button>
       </div>
-      <div class="row"><label for="semi">Tono</label><output id="semiO"></output><input id="semi" type="range" min="-9" max="0" step="0.5" value="-3"></div>
-      <div class="row"><label for="helmet">Casco (resonancia)</label><output id="helmetO"></output><input id="helmet" type="range" min="0" max="0.7" step="0.01" value="0.2"></div>
-      <div class="row"><label for="dist">Distorsión del parlante</label><output id="distO"></output><input id="dist" type="range" min="0" max="1" step="0.01" value="0.2"></div>
-      <div class="row"><label for="rev">Eco de sala</label><output id="revO"></output><input id="rev" type="range" min="0" max="0.6" step="0.01" value="0"></div>
+      <p class="help" id="modeHelp"></p>
     </section>
-    <section>
-      <h2>Micrófono (avanzado)</h2>
-      <div class="row"><label for="inGain">Ganancia del micrófono</label><output id="inGainO"></output><input id="inGain" type="range" min="0.3" max="4" step="0.05" value="1.1"></div>
-      <div class="row"><label for="thr">Puerta de ruido (corta el ruido de fondo)</label><output id="thrO"></output><input id="thr" type="range" min="-70" max="-15" step="1" value="-38"></div>
-      <label class="check" id="aecRow"><input id="aec" type="checkbox"> Cancelación de eco del teléfono (NO recomendado: activa modo llamada)</label>
-    </section>
-    <section>
-      <h2>Comandos de voz</h2>
-      <p class="help">Di la frase con calma y haz una pausa corta al terminar. Cuando la entiende, el celular vibra dos veces y aparece un aviso verde. Funciona sin internet en la app de Android.</p>
-      <label class="check"><input id="voiceCmd" type="checkbox"> Activar comandos de voz en este aparato</label>
-      <label class="check"><input id="cmdAuto" type="checkbox"> Activarlos solos cada vez que enciendo</label>
-      <p class="help" id="cmdLog">Apagado.</p>
-      <button class="big c" id="cheatOpen" type="button">Ver chuleta de comandos<small>Para ensayar antes de la fiesta</small></button>
-      <details>
-        <summary>Frases que activan cada cosa</summary>
-        <p class="help">Frases discretas que Vader diría. Puedes cambiarlas; separa varias opciones con comas. Mejor frases de 2 a 4 palabras: las de una sola palabra se confunden más.</p>
-        <div class="list" id="cmdEdit"></div>
-        <label class="check"><input id="lineKwOn" type="checkbox"> Frases grabadas por voz: palabra clave + la frase</label>
-        <div class="row" id="lineKwRow"><label for="lineKw">Palabra clave para frases</label><output></output><input id="lineKw" class="sel txt" type="text" value="como dije"></div>
+
+    <section id="devSec">
+      <h2>Micrófono y bocina</h2>
+      <div class="field" id="micRow"><label for="mic">Micrófono</label>
+        <select id="mic" class="sel"><option value="">Micrófono predeterminado</option></select></div>
+      <div class="field" id="outRow" hidden><label for="out">Bocina</label>
+        <select id="out" class="sel"><option value="">Automática</option></select></div>
+      <p class="help" id="outHelp" hidden>Este navegador no deja elegir la salida. En Mac: Ajustes del Sistema → Sonido → Salida.</p>
+      <button class="big" id="testSnd" type="button">Probar sonido<small>Debe sonar “Muy impresionante” por la bocina</small></button>
+      <details id="outTools" hidden>
+        <summary>Diagnóstico</summary>
+        <div class="inner">
+          <p class="help" id="routeInfo"></p>
+          <pre class="diag" id="diag" hidden></pre>
+          <button class="big" id="outSwitch" type="button">Selector de salida de Android</button>
+        </div>
       </details>
     </section>
-    <details>
-      <summary>Ayuda: que no se corte y que suene bien</summary>
-      <ul>
-        <li><b>Un solo celular con audífonos:</b> en Bluetooth, los audífonos solo con "Llamadas" activado y "Audio" apagado; la bocina con "Audio" activado.</li>
-        <li><b>Que no se apague:</b> Ajustes → Batería → Límites de uso en segundo plano → "Apps que nunca se suspenden" → agrega Vader.</li>
-        <li><b>Que el sonido siempre vaya a la bocina:</b> Ajustes → Sonidos y vibración → Separar sonido de apps → Vader → la bocina.</li>
-        <li>Desconecta otros audífonos o bocinas para que no "roben" el audio.</li>
-        <li>Habla lento y grave. Sube la puerta de ruido hasta que diga "silencio" cuando no hablas.</li>
-        <li><b>En compu:</b> abre el enlace en Chrome, elige micrófono y salida aquí, y controla desde el celular con "Control remoto".</li>
-      </ul>
+
+    <section id="voiceSec">
+      <h2>Voz de Vader</h2>
+      <div class="vrow"><span>Tono <small>(más abajo = más grave)</small></span><button type="button" data-step="semi:-0.5">−</button><input id="semi" type="range" min="-9" max="0" step="0.5" value="-3" aria-label="Tono"><button type="button" data-step="semi:0.5">+</button><output id="semiO"></output></div>
+      <div class="vrow"><span>Graves</span><button type="button" data-step="eqLow:-1">−</button><input id="eqLow" type="range" min="-12" max="12" step="1" value="-10" aria-label="Graves"><button type="button" data-step="eqLow:1">+</button><output id="eqLowO"></output></div>
+      <div class="vrow"><span>Medios</span><button type="button" data-step="eqMid:-1">−</button><input id="eqMid" type="range" min="-12" max="12" step="1" value="0" aria-label="Medios"><button type="button" data-step="eqMid:1">+</button><output id="eqMidO"></output></div>
+      <div class="vrow"><span>Agudos</span><button type="button" data-step="eqHigh:-1">−</button><input id="eqHigh" type="range" min="-12" max="12" step="1" value="5" aria-label="Agudos"><button type="button" data-step="eqHigh:1">+</button><output id="eqHighO"></output></div>
+      <div class="chips" id="presets"><button class="chip" data-p="vader" type="button">Restablecer voz clara</button></div>
+    </section>
+
+    <section id="cmdSec">
+      <h2>Comandos de voz</h2>
+      <label class="check"><input id="voiceCmd" type="checkbox"> Activar comandos de voz</label>
+      <label class="check"><input id="cmdAuto" type="checkbox"> Activarlos solos al encender</label>
+      <p class="help" id="cmdLog">Apagado.</p>
+      <details>
+        <summary>Editar frases</summary>
+        <div class="inner">
+          <p class="help">Escribe la frase que activa cada cosa. Varias opciones: sepáralas con comas. Mejor de 2 a 4 palabras.</p>
+          <div id="cmdEdit"></div>
+        </div>
+      </details>
+    </section>
+
+    <details id="moreSec">
+      <summary>Más ajustes</summary>
+      <div class="inner">
+        <div class="vrow"><span>Volumen de mi voz</span><button type="button" data-step="voiceVol:-0.1">−</button><input id="voiceVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de la voz"><button type="button" data-step="voiceVol:0.1">+</button><output id="voiceVolO"></output></div>
+        <div class="vrow"><span>Efectos y frases</span><button type="button" data-step="sfxVol:-0.1">−</button><input id="sfxVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de efectos"><button type="button" data-step="sfxVol:0.1">+</button><output id="sfxVolO"></output></div>
+        <div class="vrow"><span>Música</span><button type="button" data-step="musicVol:-0.1">−</button><input id="musicVol" type="range" min="0" max="2" step="0.05" value="0.8" aria-label="Volumen de música"><button type="button" data-step="musicVol:0.1">+</button><output id="musicVolO"></output></div>
+        <div class="vrow"><span>Respiración</span><button type="button" data-step="breathVol:-0.1">−</button><input id="breathVol" type="range" min="0" max="2" step="0.05" value="0.7" aria-label="Volumen de respiración"><button type="button" data-step="breathVol:0.1">+</button><output id="breathVolO"></output></div>
+        <div class="vrow"><span>Volumen general</span><button type="button" data-step="vol:-0.1">−</button><input id="vol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen general"><button type="button" data-step="vol:0.1">+</button><output id="volO"></output></div>
+        <label class="check"><input id="autoBreath" type="checkbox" checked> Respirar solo cuando me callo</label>
+        <label class="check"><input id="duckMusic" type="checkbox" checked> Bajar la música cuando hablo</label>
+        <div id="musicBox" hidden><h2>Música</h2><div class="pad" id="musicList"></div></div>
+        <h2>Efecto robótico</h2>
+        <div class="vrow"><span>Casco (resonancia)</span><button type="button" data-step="helmet:-0.05">−</button><input id="helmet" type="range" min="0" max="0.7" step="0.01" value="0.08" aria-label="Casco"><button type="button" data-step="helmet:0.05">+</button><output id="helmetO"></output></div>
+        <div class="vrow"><span>Distorsión</span><button type="button" data-step="dist:-0.05">−</button><input id="dist" type="range" min="0" max="1" step="0.01" value="0.12" aria-label="Distorsión"><button type="button" data-step="dist:0.05">+</button><output id="distO"></output></div>
+        <div class="vrow"><span>Eco de sala</span><button type="button" data-step="rev:-0.05">−</button><input id="rev" type="range" min="0" max="0.6" step="0.01" value="0" aria-label="Eco"><button type="button" data-step="rev:0.05">+</button><output id="revO"></output></div>
+        <h2>Micrófono</h2>
+        <div class="vrow"><span>Ganancia</span><button type="button" data-step="inGain:-0.1">−</button><input id="inGain" type="range" min="0.3" max="4" step="0.05" value="1.1" aria-label="Ganancia"><button type="button" data-step="inGain:0.1">+</button><output id="inGainO"></output></div>
+        <div class="vrow"><span>Puerta de ruido <small>(corta el ruido de fondo)</small></span><button type="button" data-step="thr:-1">−</button><input id="thr" type="range" min="-70" max="-15" step="1" value="-38" aria-label="Puerta de ruido"><button type="button" data-step="thr:1">+</button><output id="thrO"></output></div>
+        <label class="check" id="aecRow"><input id="aec" type="checkbox"> Cancelación de eco (activa modo llamada)</label>
+        <h2>Ayuda</h2>
+        <ul>
+          <li><b>Que no se apague:</b> Ajustes → Batería → Límites en segundo plano → Apps que nunca se suspenden → Vader.</li>
+          <li>Desconecta otros audífonos para que no se roben el micrófono ni el sonido.</li>
+          <li>Habla lento y grave. Si se cuela ruido de fondo, sube la puerta de ruido.</li>
+          <li><b>En compu:</b> abre el enlace en Chrome y elige micrófono y bocina aquí.</li>
+        </ul>
+      </div>
     </details>
   </div>
-</div>
-
-<!-- MODO SHOW -->
-<div class="showMode" id="showMode" hidden>
-  <div class="showTop"><span class="chipSt off" id="showChip">Apagado</span><span class="chipSt cmd" id="showCmd" hidden>🎙 comandos</span></div>
-  <div class="showGrid" id="showGrid">
-    <button class="sb" data-a="vader" id="sbVader" type="button">Voz Vader</button>
-    <button class="sb" data-a="mute" id="sbMute" type="button">Silenciar</button>
-    <button class="sb hotb" data-a="saber" id="sbSaber" type="button">Sable</button>
-    <button class="sb" data-a="clash" type="button">Choque</button>
-    <button class="sb" data-a="breath" type="button">Respirar</button>
-    <button class="sb" data-a="musicT" id="sbMusic" type="button">Marcha</button>
-    <button class="sb" data-a="fav0" id="sbF0" type="button">—</button>
-    <button class="sb" data-a="fav1" id="sbF1" type="button">—</button>
-    <button class="sb" data-a="fav2" id="sbF2" type="button">—</button>
-    <button class="sb" data-a="stopAll" type="button">Callar todo</button>
-  </div>
-  <button class="showExit" id="showExit" type="button">Mantén presionado para salir</button>
 </div>
 
 <div class="toast" id="toast" hidden></div>
-<!-- CHULETA DE COMANDOS -->
-<div class="sheet" id="cheat" hidden>
-  <div class="sheet-in">
-    <div class="sheet-head"><h2>Chuleta de comandos</h2><button class="x" id="cheatClose" type="button" aria-label="Cerrar">✕</button></div>
-    <p class="help">Dilas como Vader: lento, grave y con una pausa después. Si el celular vibra dos veces, entendió.</p>
-    <div class="cheat" id="cheatList"></div>
-  </div>
-</div>
-<!-- HOJA DE VOLÚMENES -->
-<div class="sheet" id="volSheet" hidden>
-  <div class="sheet-in">
-    <div class="sheet-head"><h2>Volumen y ecualizador</h2><button class="x" id="volClose" type="button" aria-label="Cerrar">✕</button></div>
-    <div class="vrow"><span>Mi voz</span><button type="button" data-step="voiceVol:-0.1">−</button><input id="voiceVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de la voz"><button type="button" data-step="voiceVol:0.1">+</button><output id="voiceVolO"></output></div>
-    <div class="vrow"><span>Efectos y frases</span><button type="button" data-step="sfxVol:-0.1">−</button><input id="sfxVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de efectos"><button type="button" data-step="sfxVol:0.1">+</button><output id="sfxVolO"></output></div>
-    <div class="vrow"><span>Música</span><button type="button" data-step="musicVol:-0.1">−</button><input id="musicVol" type="range" min="0" max="2" step="0.05" value="0.8" aria-label="Volumen de música"><button type="button" data-step="musicVol:0.1">+</button><output id="musicVolO"></output></div>
-    <div class="vrow"><span>Respiración</span><button type="button" data-step="breathVol:-0.1">−</button><input id="breathVol" type="range" min="0" max="2" step="0.05" value="0.7" aria-label="Volumen de respiración"><button type="button" data-step="breathVol:0.1">+</button><output id="breathVolO"></output></div>
-    <div class="vrow master"><span>General</span><button type="button" data-step="vol:-0.1">−</button><input id="vol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen general"><button type="button" data-step="vol:0.1">+</button><output id="volO"></output></div>
-    <div class="eqHead"><h2>Ecualizador · según la bocina</h2><p class="help">Elige tu bocina como punto de partida y ajusta de oído. Afecta voz, efectos y música.</p></div>
-    <div class="chips" id="spkPresets">
-      <button class="chip" data-s="plano" type="button">Plano</button>
-      <button class="chip" data-s="jbl" type="button">JBL Charge 5</button>
-      <button class="chip" data-s="chica" type="button">Bocina chica</button>
-      <button class="chip" data-s="cel" type="button">Altavoz del cel</button>
-      <button class="chip" data-s="grande" type="button">Bocina grande</button>
-    </div>
-    <div class="vrow"><span>Graves <small>(cuerpo de la voz)</small></span><button type="button" data-step="eqLow:-1">−</button><input id="eqLow" type="range" min="-12" max="12" step="1" value="0" aria-label="Graves"><button type="button" data-step="eqLow:1">+</button><output id="eqLowO"></output></div>
-    <div class="vrow"><span>Medios <small>(se entiende lo que dices)</small></span><button type="button" data-step="eqMid:-1">−</button><input id="eqMid" type="range" min="-12" max="12" step="1" value="0" aria-label="Medios"><button type="button" data-step="eqMid:1">+</button><output id="eqMidO"></output></div>
-    <div class="vrow"><span>Agudos <small>(brillo y la "s")</small></span><button type="button" data-step="eqHigh:-1">−</button><input id="eqHigh" type="range" min="-12" max="12" step="1" value="0" aria-label="Agudos"><button type="button" data-step="eqHigh:1">+</button><output id="eqHighO"></output></div>
-  </div>
-</div>
 
-<nav class="dock" aria-label="Controles">
-  <div class="dock-in">
-    <div class="ctl">
-      <button id="vaderBtn" type="button">Voz Vader</button>
-      <button id="muteBtn" type="button">Silenciar</button>
-      <button id="volBtn" type="button">Vol · EQ<small id="volO2">100%</small></button>
-    </div>
-    <div class="tabs" id="tabs">
-      <button class="sel" data-tab="inicio" type="button">Inicio</button>
-      <button data-tab="frases" type="button">Frases</button>
-      <button data-tab="sonidos" type="button">Sonidos</button>
-      <button data-tab="ajustes" type="button">Ajustes</button>
-    </div>
+<nav class="dock" aria-label="Pestañas">
+  <div class="tabs" id="tabs">
+    <button class="sel" data-tab="show" type="button">Show</button>
+    <button data-tab="ajustes" type="button">Ajustes</button>
   </div>
 </nav>
 
@@ -425,7 +297,7 @@ registerProcessor('vader-gate', VaderGate);
 
 class PitchShift extends AudioWorkletProcessor {
   static get parameterDescriptors(){ return [{name:'ratio',defaultValue:0.79,minValue:0.25,maxValue:2,automationRate:'k-rate'}]; }
-  constructor(){ super(); this.win=Math.round(sampleRate*0.048); this.N=this.win*4;
+  constructor(){ super(); this.win=Math.round(sampleRate*0.038); this.N=this.win*4;
     this.buf=new Float32Array(this.N); this.w=0; this.ph=0; }
   read(d){ let p=this.w-1-d; while(p<0)p+=this.N; const i0=Math.floor(p), f=p-i0, i1=(i0+1)%this.N;
     return this.buf[i0]*(1-f)+this.buf[i1]*f; }
@@ -447,7 +319,7 @@ registerProcessor('pitch-shift', PitchShift);
 
 // Copia el sonido final para mandarlo a la salida nativa elegida (bloques de 1024 muestras, PCM 16 bits estéreo)
 class OutTap extends AudioWorkletProcessor {
-  constructor(){ super(); this.n=1024; this.b=new Int16Array(this.n*2); this.i=0; }
+  constructor(){ super(); this.n=512; this.b=new Int16Array(this.n*2); this.i=0; }
   process(inputs, outputs){
     const inp=inputs[0]; if(!inp||!inp.length) return true;
     const L=inp[0], Rr=inp[1]||inp[0];
@@ -460,6 +332,19 @@ class OutTap extends AudioWorkletProcessor {
   }
 }
 registerProcessor('out-tap', OutTap);
+// Recibe el micrófono nativo de Android (bloques PCM) y lo entrega como audio normal, con un colchón corto
+class MicIn extends AudioWorkletProcessor {
+  constructor(){ super(); this.N=sampleRate; this.b=new Float32Array(this.N); this.w=0; this.r=0; this.fill=0; this.go=false;
+    this.port.onmessage=e=>{ const d=e.data; for(let i=0;i<d.length;i++){ this.b[this.w]=d[i]; this.w=(this.w+1)%this.N; } this.fill=Math.min(this.N,this.fill+d.length); }; }
+  process(inputs, outputs){
+    const o=outputs[0][0]; const sr=sampleRate;
+    if(this.fill>sr*0.06){ const drop=this.fill-Math.round(sr*0.025); this.r=(this.r+drop)%this.N; this.fill-=drop; }
+    if(!this.go){ if(this.fill>=sr*0.02) this.go=true; else { o.fill(0); return true; } }
+    for(let k=0;k<o.length;k++){ if(this.fill>0){ o[k]=this.b[this.r]; this.r=(this.r+1)%this.N; this.fill--; } else { o[k]=0; this.go=false; } }
+    return true;
+  }
+}
+registerProcessor('mic-in', MicIn);
 `;
 
 // ---------- Estado ----------
@@ -469,12 +354,11 @@ let breathing=false, lastVoice=0, saber=null;
 let meterSrc=null;
 let mode='solo', peer=null, call=null, remoteEl=null, sendStream=null, meterCtx=null, meterRaf=0, myCode='';
 let conns=new Set(), remoteConn=null, muted=false, vader=true, lastLvlSend=0;
-let man={breaths:[],music:[],lines:[],saber:null}, bufs={}, pads=[];
+let man={breaths:[],music:[],lines:[],saber:null}, bufs={};
 let breathSel='b1', bed=null, bedUp=false, forceBedUntil=0, music=null, musicId=null, lineSrc=null, lineId=null;
+// Voz clara por defecto: grave, un poco robótica, sin eco (ajuste probado por José: graves abajo, agudos arriba)
 const PRESETS={
-  clasico:{semi:-3, helmet:0.2, dist:0.2, rev:0},
-  grave:{semi:-5, helmet:0.2, dist:0.2, rev:0.03},
-  metal:{semi:-3, helmet:0.45, dist:0.45, rev:0.06}
+  vader:{semi:-3, helmet:0.08, dist:0.12, rev:0, eqLow:-10, eqMid:0, eqHigh:5}
 };
 const fmt={
   semi:v=>(v>0?'+':'')+v+' st', helmet:v=>Math.round(v*100)+'%', dist:v=>Math.round(v*100)+'%', rev:v=>Math.round(v/0.6*100)+'%',
@@ -483,7 +367,7 @@ const fmt={
   eqLow:v=>(v>0?'+':'')+v+' dB', eqMid:v=>(v>0?'+':'')+v+' dB', eqHigh:v=>(v>0?'+':'')+v+' dB'
 };
 const IDS=Object.keys(fmt);
-const TOGGLES=['autoBreath','valve','duckMusic'];
+const TOGGLES=['autoBreath','duckMusic'];
 function setStatus(t){ $('status').textContent=t; }
 const isCtl=()=>mode==='remote'||mode==='mic';
 
@@ -509,14 +393,14 @@ async function build(){
   n.voiceMute=ctx.createGain();
   n.shift=new AudioWorkletNode(ctx,'pitch-shift',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
   // Ecualización medida contra las frases reales de Vader (espectro promedio de 28 frases)
-  n.low=ctx.createBiquadFilter(); n.low.type='peaking'; n.low.frequency.value=285; n.low.Q.value=1.15; n.low.gain.value=9;
-  n.mid=ctx.createBiquadFilter(); n.mid.type='peaking'; n.mid.frequency.value=1750; n.mid.Q.value=0.55; n.mid.gain.value=-7;
+  n.low=ctx.createBiquadFilter(); n.low.type='peaking'; n.low.frequency.value=285; n.low.Q.value=1.15; n.low.gain.value=6;
+  n.mid=ctx.createBiquadFilter(); n.mid.type='peaking'; n.mid.frequency.value=1750; n.mid.Q.value=0.55; n.mid.gain.value=-4;
   n.mask=ctx.createBiquadFilter(); n.mask.type='peaking'; n.mask.frequency.value=2370; n.mask.Q.value=3; n.mask.gain.value=6;
   n.sub=ctx.createBiquadFilter(); n.sub.type='highpass'; n.sub.frequency.value=120; n.sub.Q.value=0.7;
-  n.lp2=ctx.createBiquadFilter(); n.lp2.type='lowpass'; n.lp2.frequency.value=7300; n.lp2.Q.value=0.7;
+  n.lp2=ctx.createBiquadFilter(); n.lp2.type='lowpass'; n.lp2.frequency.value=9000; n.lp2.Q.value=0.7;
   n.shaper=ctx.createWaveShaper(); n.shaper.oversample='2x';
   n.shPost=ctx.createGain();
-  n.lp=ctx.createBiquadFilter(); n.lp.type='lowpass'; n.lp.frequency.value=5200; n.lp.Q.value=0.75;
+  n.lp=ctx.createBiquadFilter(); n.lp.type='lowpass'; n.lp.frequency.value=6500; n.lp.Q.value=0.75;
   n.vaderGain=ctx.createGain(); n.dry=ctx.createGain(); n.dry.gain.value=0;
   n.helmetIn=ctx.createGain();
   n.combDelay=ctx.createDelay(0.05); n.combDelay.delayTime.value=0.0068;
@@ -573,40 +457,28 @@ async function getBuf(file){
 async function loadBuffers(){
   const files=[...man.breaths.map(b=>b.file), man.saber&&man.saber.file, ...man.lines.map(l=>l.file), ...man.music.map(m=>m.file)].filter(Boolean);
   for(const f of files){ try{ await getBuf(f); }catch(e){} }
-  decodePads();
 }
 function btn(label, sub, cls, onClick, id){
   const b=document.createElement('button'); b.type='button'; b.className='big'+(cls?' '+cls:'');
   b.textContent=label; if(sub){ const s=document.createElement('small'); s.textContent=sub; b.appendChild(s); }
   if(id) b.dataset.id=id; b.addEventListener('click',onClick); return b;
 }
+const TEST_LINE='f39';
 function renderLibrary(){
-  const G={'Frases famosas':'g-famosas','Respuestas cortas':'g-cortas','Órdenes y amenazas':'g-ordenes'};
-  Object.values(G).forEach(id=>$(id).innerHTML='');
-  man.lines.forEach(l=>{ const box=$(G[l.group]||'g-ordenes'); if(!box) return;
-    box.appendChild(btn(l.es, l.group==='Respuestas cortas'?null:'"'+l.en+'"', 'line'+(favIds.includes(l.id)?' fav':''), ()=>{ if($('favEdit').checked){ toggleFav(l.id); return; } runCmd('line',l.id); }, l.id)); });
-  const fv=$('favs'); fv.innerHTML='';
-  const favs=favIds.map(id=>man.lines.find(x=>x.id===id)).filter(Boolean);
-  favs.forEach(l=>fv.appendChild(btn(l.es,null,'line',()=>runCmd('line',l.id),l.id)));
-  if(!favs.length) fv.innerHTML='<p class="help" style="grid-column:1/-1">No tienes favoritas. Elígelas en la pestaña Frases.</p>';
-  [0,1,2].forEach(i=>{ const l=favs[i]; const b=$('sbF'+i); b.textContent=l?l.es:'—'; b.dataset.id=l?l.id:''; b.disabled=!l; });
-  filterLines();
-  const bl=$('breathList'); bl.innerHTML='';
-  [...man.breaths.map(b=>({id:b.id,name:b.name})), {id:'synth',name:'Respiración sintética (generada por la app)'}]
-    .forEach(b=>bl.appendChild(btn(b.name,null,'breathOpt'+(b.id===breathSel?' on':''),()=>runCmd('breathSel',b.id),b.id)));
+  const ph=$('phrases'); ph.innerHTML='';
+  man.lines.forEach(l=>{ const b=document.createElement('button'); b.type='button'; b.className='k line'; b.textContent=l.es; b.dataset.id=l.id;
+    b.addEventListener('click',()=>runCmd('line',l.id)); ph.appendChild(b); });
   const ml=$('musicList'); ml.innerHTML='';
-  man.music.forEach(m=>ml.appendChild(btn('▶ '+m.name,'Toca para reproducir o detener','music',()=>runCmd('music',m.id),m.id)));
-  if(!man.music.length) ml.innerHTML='<p class="help">No hay música cargada.</p>';
+  man.music.forEach(m=>{ const b=document.createElement('button'); b.type='button'; b.className='k music'; b.dataset.id=m.id; b.textContent=m.name; b.addEventListener('click',()=>runCmd('music',m.id)); ml.appendChild(b); });
+  $('musicBox').hidden=man.music.length<2;
+  if(!man.breaths.some(x=>x.id===breathSel)) breathSel=(man.breaths[0]||{}).id||'synth';
   syncLibraryUI();
 }
 function syncLibraryUI(){
-  document.querySelectorAll('.breathOpt').forEach(b=>b.classList.toggle('on',b.dataset.id===breathSel));
-  document.querySelectorAll('.music').forEach(b=>{ const on=b.dataset.id===musicId; b.classList.toggle('playing',on);
-    const m=man.music.find(x=>x.id===b.dataset.id); if(m) b.firstChild.textContent=(on?'■ ':'▶ ')+m.name; });
+  document.querySelectorAll('.music').forEach(b=>b.classList.toggle('playing',b.dataset.id===musicId));
   document.querySelectorAll('.line').forEach(b=>b.classList.toggle('playing',b.dataset.id===lineId));
-  if(man.music[0]){ const on=musicId===man.music[0].id; $('musicQuick').textContent=(on?'■ ':'▶ ')+man.music[0].name; $('musicQuick').classList.toggle('playing',on); $('sbMusic').textContent=on?'■ Marcha':'Marcha'; $('sbMusic').classList.toggle('playing',on); }
-  document.querySelectorAll('#showGrid .sb[data-id]').forEach(b=>b.classList.toggle('playing',!!b.dataset.id && b.dataset.id===lineId));
-  $('valveRow').hidden=breathSel!=='synth';
+  const mq=$('musicQuick'), on=!!musicId; mq.classList.toggle('playing',on);
+  mq.textContent=on?'■ Parar música':(man.music.length>1?'▶ Música':'▶ '+((man.music[0]||{}).name||'Música'));
 }
 
 // ---------- Frases, música, respiración grabada ----------
@@ -652,7 +524,7 @@ function setBed(up){
 function onLevel({lvl,open}){
   const db=20*Math.log10(lvl+1e-7), pct=Math.max(0,Math.min(100,(db+70)/70*100));
   $('lvl').style.width=pct+'%';
-  const led=$('led'); led.textContent=open?'● hablando':'● silencio'; led.classList.toggle('on',open);
+  $('lvl').classList.toggle('open',open);
   if(conns.size && performance.now()-lastLvlSend>100){ lastLvlSend=performance.now(); conns.forEach(c=>{ try{ c.open&&c.send({t:'lvl',p:pct,open}); }catch(e){} }); }
   if(!running) return;
   const now=performance.now(), t=ctx.currentTime;
@@ -690,7 +562,7 @@ function breath(){
   const t=ctx.currentTime+0.02;
   puff(t,1100,1550,0.9,0.55,0.35,0.85,0.35); puff(t,2900,3300,9,0.18,0.35,0.85,0.35);
   const t2=t+1.75;
-  if($('valve').checked){ click(t+1.62); click(t2+1.95); }
+  click(t+1.62); click(t2+1.95);
   puff(t2,780,540,0.7,0.7,0.3,1.0,0.6); puff(t2,2400,2100,8,0.12,0.3,1.0,0.6);
   setTimeout(()=>{ breathing=false; gateThr(false); }, 4100);
 }
@@ -726,22 +598,59 @@ async function toggleSaber(){
     saber=null;
   }
   $('saber').classList.toggle('on',!!saber); $('saber').textContent=saber?'Apagar sable':'Encender sable';
-  $('sbSaber').classList.toggle('on',!!saber); $('sbSaber').textContent=saber?'Apagar sable':'Sable';
+
   broadcastState();
 }
-function swing(){
-  if(!saber) return; const t=ctx.currentTime, {src:s,g}=saber;
-  if(s){ s.playbackRate.cancelScheduledValues(t); s.playbackRate.setValueAtTime(1,t); s.playbackRate.linearRampToValueAtTime(1.22,t+0.16); s.playbackRate.linearRampToValueAtTime(1,t+0.5); }
-  g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(1,t); g.gain.linearRampToValueAtTime(1.6,t+0.16); g.gain.linearRampToValueAtTime(1,t+0.5);
+// Movimiento: funciona con o sin el sable encendido (zumbido que pasa + aire)
+async function swing(){
+  const t=ctx.currentTime+0.01, dur=0.55;
+  const out=ctx.createGain(); out.gain.value=1; out.connect(nodes.sfx);
+  // aire que corta: ruido con filtro que barre
+  const n=noiseSrc(), bp=ctx.createBiquadFilter(), ng=ctx.createGain();
+  bp.type='bandpass'; bp.Q.value=1.4; bp.frequency.setValueAtTime(380,t); bp.frequency.exponentialRampToValueAtTime(1900,t+dur*0.45); bp.frequency.exponentialRampToValueAtTime(520,t+dur);
+  ng.gain.setValueAtTime(0.0001,t); ng.gain.exponentialRampToValueAtTime(0.32,t+dur*0.45); ng.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  n.connect(bp); bp.connect(ng); ng.connect(out); n.start(t,Math.random()); n.stop(t+dur+0.05);
+  // zumbido que se acerca y se aleja (efecto Doppler)
+  let b=null; try{ if(man.saber) b=await getBuf(man.saber.file); }catch(e){}
+  const hg=ctx.createGain(); hg.gain.setValueAtTime(0.0001,t); hg.gain.exponentialRampToValueAtTime(saber?0.9:1.2,t+dur*0.45); hg.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+  hg.connect(out);
+  if(b){ const h=ctx.createBufferSource(); h.buffer=b; h.playbackRate.setValueAtTime(0.82,t); h.playbackRate.linearRampToValueAtTime(1.38,t+dur*0.45); h.playbackRate.linearRampToValueAtTime(0.86,t+dur);
+    h.connect(hg); h.start(t,(man.saber.loopStart||3)+Math.random()*3); h.stop(t+dur+0.05); }
+  else { const o1=ctx.createOscillator(), o2=ctx.createOscillator(), lp=ctx.createBiquadFilter(); o1.type='sawtooth'; o2.type='sawtooth';
+    o1.frequency.setValueAtTime(88,t); o1.frequency.linearRampToValueAtTime(128,t+dur*0.45); o1.frequency.linearRampToValueAtTime(92,t+dur); o2.frequency.value=91;
+    lp.type='lowpass'; lp.frequency.value=1400; o1.connect(lp); o2.connect(lp); lp.connect(hg); o1.start(t); o2.start(t); o1.stop(t+dur+0.05); o2.stop(t+dur+0.05); }
+  if(saber && saber.src){ const s=saber.src; s.playbackRate.cancelScheduledValues(t); s.playbackRate.setValueAtTime(1,t); s.playbackRate.linearRampToValueAtTime(1.2,t+0.2); s.playbackRate.linearRampToValueAtTime(1,t+dur); }
 }
-function clash(){
-  const t=ctx.currentTime;
-  const s=noiseSrc(), bp=ctx.createBiquadFilter(), g=ctx.createGain();
-  bp.type='bandpass'; bp.frequency.value=2600; bp.Q.value=0.7;
-  g.gain.setValueAtTime(0.9,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.45);
-  s.connect(bp); bp.connect(g); g.connect(nodes.sfx); s.start(t); s.stop(t+0.5);
-  const o=ctx.createOscillator(), og=ctx.createGain(); o.type='square'; o.frequency.setValueAtTime(900,t); o.frequency.exponentialRampToValueAtTime(140,t+0.3);
-  og.gain.setValueAtTime(0.25,t); og.gain.exponentialRampToValueAtTime(0.001,t+0.3); o.connect(og); og.connect(nodes.sfx); o.start(t); o.stop(t+0.32);
+// Choque: chispazo + timbre metálico + chisporroteo eléctrico + golpe grave
+async function clash(){
+  const t=ctx.currentTime+0.005;
+  const out=ctx.createGain(); out.gain.value=0.9; out.connect(nodes.sfx);
+  // chispazo inicial
+  const c=noiseSrc(), chp=ctx.createBiquadFilter(), cg=ctx.createGain();
+  chp.type='highpass'; chp.frequency.value=1800; cg.gain.setValueAtTime(1.0,t); cg.gain.exponentialRampToValueAtTime(0.001,t+0.09);
+  c.connect(chp); chp.connect(cg); cg.connect(out); c.start(t,Math.random()); c.stop(t+0.12);
+  // timbre metálico (parciales inarmónicos)
+  [[1180,0.22,0.55],[1745,0.18,0.45],[2470,0.14,0.38],[3320,0.1,0.3],[4150,0.08,0.24],[5600,0.06,0.18]].forEach(([f,a,d])=>{
+    const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(f*(0.98+Math.random()*0.04),t);
+    g.gain.setValueAtTime(a,t); g.gain.exponentialRampToValueAtTime(0.0005,t+d); o.connect(g); g.connect(out); o.start(t); o.stop(t+d+0.02); });
+  // chisporroteo eléctrico que parpadea
+  const z=noiseSrc(), zb=ctx.createBiquadFilter(), zg=ctx.createGain(), am=ctx.createGain(), lfo=ctx.createOscillator(), lfoG=ctx.createGain();
+  zb.type='bandpass'; zb.frequency.value=3600; zb.Q.value=0.8;
+  zg.gain.setValueAtTime(0.55,t); zg.gain.exponentialRampToValueAtTime(0.001,t+0.75);
+  lfo.type='square'; lfo.frequency.setValueAtTime(48,t); lfo.frequency.linearRampToValueAtTime(22,t+0.7); lfoG.gain.value=0.5; am.gain.value=0.5;
+  lfo.connect(lfoG); lfoG.connect(am.gain);
+  z.connect(zb); zb.connect(am); am.connect(zg); zg.connect(out); z.start(t,Math.random()); z.stop(t+0.8); lfo.start(t); lfo.stop(t+0.8);
+  // zumbido del sable que se dispara
+  let b=null; try{ if(man.saber) b=await getBuf(man.saber.file); }catch(e){}
+  if(b){ const h=ctx.createBufferSource(), sh=ctx.createWaveShaper(), hg=ctx.createGain(); h.buffer=b; sh.curve=curve(0.6);
+    h.playbackRate.setValueAtTime(1.7,t); h.playbackRate.exponentialRampToValueAtTime(1.0,t+0.35);
+    hg.gain.setValueAtTime(0.8,t); hg.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+    h.connect(sh); sh.connect(hg); hg.connect(out); h.start(t,(man.saber.loopStart||3)+Math.random()*3); h.stop(t+0.5); }
+  // golpe grave
+  const o=ctx.createOscillator(), og=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(110,t); o.frequency.exponentialRampToValueAtTime(45,t+0.18);
+  og.gain.setValueAtTime(0.5,t); og.gain.exponentialRampToValueAtTime(0.001,t+0.2); o.connect(og); og.connect(out); o.start(t); o.stop(t+0.22);
+  // si el sable está encendido, parpadea un instante
+  if(saber && saber.g){ const g=saber.g.gain, v=g.value; g.cancelScheduledValues(t); g.setValueAtTime(v,t); g.linearRampToValueAtTime(v*0.35,t+0.03); g.linearRampToValueAtTime(v,t+0.25); }
 }
 
 // ---------- Voz: Vader / real / silencio / volumen ----------
@@ -759,7 +668,6 @@ function setMuted(m){
 function stepVol(d){ const v=Math.max(0,Math.min(2,Math.round((+$('vol').value+d)*20)/20)); $('vol').value=v; apply('vol'); save(); }
 function stopAll(){
   lineReq++; if(lineSrc){ try{ lineSrc.stop(); }catch(e){} } stopMusic(); if(saber) toggleSaber(); forceBedUntil=0;
-  padSrc.forEach(s=>{ try{ s.stop(); }catch(e){} }); padSrc=[];
 }
 
 // ---------- Comandos (locales o desde el celular) ----------
@@ -783,7 +691,6 @@ function runCmd(a,arg){
     case 'clash': clash(); break;
     case 'breath': if(breathSel==='synth') breath(); else { forceBedUntil=performance.now()+6000; setBed(true); } break;
     case 'stopAll': stopAll(); break;
-    case 'pad': playPad(arg); break;
     case 'saberOn': if(!saber) toggleSaber(); break;
     case 'saberOff': if(saber) toggleSaber(); break;
     case 'musicPlay': if(musicId!==arg) toggleMusic(arg); break;
@@ -793,16 +700,52 @@ function runCmd(a,arg){
 }
 
 // ---------- Micrófono, encendido, apagado ----------
+// En la app de Android el micrófono se graba nativo, en modo normal: así no se activa el "modo llamada"
+const NATIVE_IN=!!(window.VaderNative && VaderNative.startInput);
+let natIn=false, natInRate=0, rsPos=0, rsLast=0;
+// En la app SIEMPRE se usa el micrófono nativo: el del navegador pone el teléfono en modo llamada
+function useNativeIn(){ return NATIVE_IN; }
+window.__vIn=b=>{ if(!natIn||!nodes.micIn) return; const bin=atob(b), n=bin.length>>1; let f=new Float32Array(n);
+  for(let i=0;i<n;i++){ let v=bin.charCodeAt(2*i)|(bin.charCodeAt(2*i+1)<<8); if(v>=32768) v-=65536; f[i]=v/32768; }
+  if(natInRate && ctx && natInRate!==ctx.sampleRate){ // remuestreo lineal si Android grabó a otra frecuencia
+    const step=natInRate/ctx.sampleRate, out=[], at=i=>i<0?rsLast:f[i]; let p=rsPos;
+    while(p<n-1){ const i=Math.floor(p), fr=p-i; out.push(at(i)+(at(i+1)-at(i))*fr); p+=step; }
+    rsPos=p-n; rsLast=f[n-1]; f=Float32Array.from(out); }
+  nodes.micIn.port.postMessage(f,[f.buffer]); };
+function stopNativeIn(){ if(natIn){ try{ VaderNative.stopInput(); }catch(_){} natIn=false; } }
 async function openMic(){
-  if(stream){ stream.getTracks().forEach(t=>t.stop()); }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
   if(src){ try{ src.disconnect(); }catch(e){} }
+  stopNativeIn();
+  if(useNativeIn()){
+    if(!nodes.micIn) nodes.micIn=new AudioWorkletNode(ctx,'mic-in',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[1]});
+    await listMics();
+    const v=$('mic').value, id=v&&v.startsWith('n:')?parseInt(v.slice(2),10):0;
+    let res={ok:false,err:'sin respuesta'}; try{ const r=VaderNative.startInput(Math.round(ctx.sampleRate), id); res=typeof r==='string'?JSON.parse(r):{ok:!!r}; }catch(e){ res={ok:false,err:String(e.message||e)}; }
+    if(!res.ok) throw new Error('El micrófono no se pudo abrir: '+(res.err||'')+'. Desconecta y vuelve a conectar el receptor, y cierra otras apps que usen el micro (cámara, grabadora).');
+    natIn=true; natInRate=res.rate||Math.round(ctx.sampleRate); rsPos=0; rsLast=0;
+    src=nodes.micIn; src.connect(nodes.inGain);
+    if(res.device) setTimeout(()=>setStatus('Micrófono: '+res.device),1200);
+    return;
+  }
   const aec=$('aec').checked;
+  const mv=$('mic').value&&!$('mic').value.startsWith('n:')?$('mic').value:'';
   stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:aec,noiseSuppression:aec,autoGainControl:false,channelCount:1,
-    deviceId:$('mic').value?{exact:$('mic').value}:undefined}});
+    deviceId:mv?{exact:mv}:undefined}});
   src=ctx.createMediaStreamSource(stream); src.connect(nodes.inGain);
   listMics();
 }
+function savedMic(){ try{ return localStorage.getItem('vaderMic')||''; }catch(e){ return ''; } }
 async function listMics(){
+  if(useNativeIn() && mode!=='mic'){
+    let devs=[]; try{ devs=JSON.parse(VaderNative.listInputs()); }catch(e){}
+    const sel=$('mic'), cur=sel.value, want=savedMic(); sel.innerHTML='';
+    const o0=document.createElement('option'); o0.value='n:0'; o0.textContent='Automático (lo decide Android)'; sel.appendChild(o0);
+    devs.forEach(d=>{ const o=document.createElement('option'); o.value='n:'+d.id; o.textContent=d.name; o.dataset.name=d.name; o.dataset.usb=d.usb?'1':''; sel.appendChild(o); });
+    const byName=[...sel.options].find(o=>o.dataset.name&&o.dataset.name===want), usb=[...sel.options].find(o=>o.dataset.usb);
+    if([...sel.options].some(o=>o.value===cur)&&cur!=='n:0') sel.value=cur; else if(byName) sel.value=byName.value; else if(usb) sel.value=usb.value; else sel.value='n:0';
+    return;
+  }
   try{
     const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='audioinput');
     const sel=$('mic'), cur=sel.value; sel.innerHTML='';
@@ -812,6 +755,7 @@ async function listMics(){
   }catch(e){}
 }
 $('mic').addEventListener('change',async()=>{ const lab=($('mic').selectedOptions[0]||{}).textContent||'';
+  try{ localStorage.setItem('vaderMic',($('mic').selectedOptions[0]||{dataset:{}}).dataset.name||''); }catch(e){}
   if(/bluetooth|headset|buds/i.test(lab) && /Android/i.test(navigator.userAgent)) setStatus('Ojo: en Android un micrófono Bluetooth pasa el audio a modo llamada.');
   if(running && mode!=='mic' && mode!=='remote'){ try{ await openMic(); setStatus('Micrófono cambiado'); showRoute(); }catch(e){ setStatus('Ese micrófono no se pudo usar'); } }
   else if(running && mode==='mic' && sendStream){ try{
@@ -835,6 +779,8 @@ async function listOuts(){
     const o0=document.createElement('option'); o0.value=''; o0.textContent='Automático (lo decide Android)'; sel.appendChild(o0);
     devs.forEach(d=>{ const o=document.createElement('option'); o.value=String(d.id); o.textContent=d.name; o.dataset.name=d.name; sel.appendChild(o); });
     const m=[...sel.options].find(o=>o.dataset.name===want); sel.value=m?m.value:'';
+    // si hay un receptor USB conectado, Android puede mandarle el sonido a él: elegir la bocina Bluetooth sola
+    if(!m && devs.some(d=>[11,12,22].includes(d.type))){ const bt=devs.find(d=>[8,27].includes(d.type)); if(bt) sel.value=String(bt.id); }
     $('outRow').hidden=(mode==='remote'||mode==='mic'); $('outHelp').hidden=true; $('outTools').hidden=$('outRow').hidden;
     return;
   }
@@ -845,10 +791,11 @@ async function listOuts(){
     const cur=sel.value; sel.innerHTML='';
     outs.forEach((d,i)=>{ const o=document.createElement('option'); o.value=d.deviceId==='default'?'':d.deviceId; o.textContent=d.label||('Salida '+(i+1)); sel.appendChild(o); });
     if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
-    $('outRow').hidden=false;
+    $('outRow').hidden=!(mode==='solo'||mode==='bocina');
   }catch(e){}
 }
-window.onNativeDevices=()=>{ listOuts().then(()=>{ if(running) applyOutput(); }); };
+window.onNativeDevices=()=>{ listOuts().then(()=>{ if(running) applyOutput(); });
+  if(useNativeIn()){ const before=$('mic').value; listMics().then(()=>{ if(running && natIn && $('mic').value!==before){ openMic().then(()=>{ setStatus('Micrófono: '+(($('mic').selectedOptions[0]||{}).textContent||'')); }).catch(()=>{}); } }); } };
 function routeTo(nat){
   if(!ctx||!nodes.limiter) return;
   try{ nodes.limiter.disconnect(); }catch(_){}
@@ -869,7 +816,8 @@ function applyOutput(){
   showRoute();
 }
 const MODE_TXT={0:'normal (música)',1:'timbre',2:'llamada',3:'llamada por app',4:'llamada de red'};
-function micLabel(){ try{ const t=stream&&stream.getAudioTracks()[0]; return t?t.label:''; }catch(e){ return ''; } }
+function micLabel(){ if(natIn){ try{ const st=JSON.parse(VaderNative.inputState()); return (st.routed||'micrófono nativo')+' (modo normal)'; }catch(e){ return 'micrófono nativo'; } }
+  try{ const t=stream&&stream.getAudioTracks()[0]; return t?t.label:''; }catch(e){ return ''; } }
 function isBtLabel(t){ return /bluetooth|headset|bose|buds|earbud|sco|manos libres/i.test(t||''); }
 function showRoute(){
   clearInterval(routeTimer);
@@ -885,10 +833,11 @@ function showRoute(){
       if(r && want && r!==want) warn='Android mandó el sonido a '+r+' en vez de '+want+'.';
     } else if(running && NATIVE_OUT){ txt='🔊 Salida automática de Android'+(st.routed?': '+st.routed:''); }
     if(running && btCall) warn='Los audífonos están en MODO LLAMADA para el micrófono ('+(st.comm||'Bluetooth')+'). Mientras eso esté activo, Android pausa la música por Bluetooth, así que la JBL no suena y el sonido se va a los audífonos.';
-    $('routeInfo').textContent=txt; $('routeHero').textContent=txt; $('routeHero').hidden=!txt;
+    $('routeInfo').textContent=txt;
     $('routeWarn').textContent=warn; $('routeWarn').hidden=!warn; $('fixMic').hidden=!(running && btCall);
     if(NATIVE_OUT && running){
-      $('diag').textContent='Micrófono en uso: '+(micLabel()||'—')+'\nModo de audio de Android: '+(MODE_TXT[st.mode]??st.mode)+'\nBluetooth de llamada activo: '+(btCall?'sí ('+(st.comm||'')+')':'no')+'\nSalida real: '+(st.routed||'automática');
+      let ist={}; if(natIn){ try{ ist=JSON.parse(VaderNative.inputState()); }catch(_){} }
+      $('diag').textContent='Micrófono en uso: '+(micLabel()||'—')+(natIn?'\nGrabación nativa: '+(ist.source||'')+' · '+(ist.rate||'')+' Hz'+(ist.fixes?' · modo llamada corregido '+ist.fixes+' veces':''):'')+'\nModo de audio de Android: '+(MODE_TXT[st.mode]??st.mode)+'\nBluetooth de llamada activo: '+(btCall?'sí ('+(st.comm||'')+')':'no')+'\nSalida real: '+(st.routed||'automática');
       $('diag').hidden=false;
     } else $('diag').hidden=true;
   };
@@ -911,7 +860,7 @@ $('fixMic').addEventListener('click',useBuiltInMic);
 $('outSwitch').addEventListener('click',()=>{ let ok=false; try{ ok=VaderNative.outputSwitcher(); }catch(_){} if(!ok) setStatus('Tu Android no tiene el selector de salida del sistema.'); });
 
 function showLatency(){ if(!ctx||!$('lat')) return; const ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000+24); $('lat').textContent='latencia ≈ '+ms+' ms\n+ Bluetooth'; }
-function setBtn(on){ $('btn').classList.toggle('on',on); $('btn').textContent=on?'Apagar':'Encender'; $('btn').setAttribute('aria-pressed',String(on)); updChip(); updPrep(); }
+function setBtn(on){ $('btn').classList.toggle('on',on); $('btn').textContent=on?'Apagar':'Encender'; $('btn').setAttribute('aria-pressed',String(on)); updChip(); }
 function failMsg(err){
   setStatus(err && err.name==='NotAllowedError' ? 'Permiso de micrófono negado. Actívalo en el candado de la barra del navegador.' :
     (!window.isSecureContext ? 'Abre la app desde un enlace https.' : 'Error: '+(err&&err.message||err)));
@@ -942,6 +891,7 @@ async function stop(){
   if(peer){ try{peer.destroy();}catch(e){} peer=null; }
   if(remoteEl){ remoteEl.srcObject=null; remoteEl=null; }
   if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  stopNativeIn(); if(nodes.micIn){ try{ nodes.micIn.disconnect(); }catch(_){} }
   if(sendStream){ sendStream.getTracks().forEach(t=>t.stop()); sendStream=null; }
   cancelAnimationFrame(meterRaf);
   if(meterCtx){ try{ await meterCtx.close(); }catch(e){} meterCtx=null; }
@@ -967,7 +917,7 @@ function openReceiver(){
     if(!window.Peer){ reject(new Error('Sin conexión entre aparatos (revisa internet).')); return; }
     myCode=stableCode();
     const p=new Peer('vader-gt-'+myCode,{debug:0}); peer=p;
-    p.on('open',()=>{ hostRetry=0; $('myCode').textContent=myCode; $('bocinaBox').hidden=false;
+    p.on('open',()=>{ hostRetry=0; $('myCode').textContent=myCode; $('bocinaBox').hidden=(mode!=='bocina');
       if(mode==='bocina') setStatus(call&&call.open?'Micrófono conectado. Habla.':'Esperando al micrófono. Código: '+myCode); resolve(); });
     p.on('connection',c=>{ conns.add(c); c.on('open',()=>sendState(c)); c.on('data',d=>{ if(d&&d.t==='ping') return; handleRemote(d); }); c.on('close',()=>conns.delete(c)); c.on('error',()=>conns.delete(c)); });
     p.on('error',e=>{
@@ -1031,7 +981,7 @@ function openCtl(){
   if(remoteConn && !remoteConn.open && remoteConn._opening && Date.now()-remoteConn._opening<6000) return;
   try{ remoteConn&&remoteConn.close(); }catch(_){}
   const c=peer.connect('vader-gt-'+targetCode,{reliable:true}); c._opening=Date.now(); remoteConn=c;
-  c.on('open',()=>{ if(mode==='remote') setStatus('Conectado al código '+targetCode); try{ localStorage.setItem('vaderCode',targetCode); }catch(_){} updChip(); updPrep(); });
+  c.on('open',()=>{ if(mode==='remote') setStatus('Conectado al código '+targetCode); try{ localStorage.setItem('vaderCode',targetCode); }catch(_){} updChip(); });
   c.on('data',onHostData);
   c.on('close',()=>{ if(remoteConn===c && mode==='remote'){ setStatus('Reconectando…'); $('btn').classList.remove('on'); } updChip(); });
 }
@@ -1065,7 +1015,7 @@ function stateObj(){
   const params={}; IDS.forEach(id=>params[id]=$(id).value);
   const toggles={}; TOGGLES.forEach(id=>toggles[id]=$(id).checked);
   const preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p;
-  return {t:'state',running,muted,vader,saber:!!saber,breathSel,musicId,lineId,params,toggles,preset,pads:pads.map(p=>p.name)};
+  return {t:'state',running,muted,vader,saber:!!saber,breathSel,musicId,lineId,params,toggles,preset};
 }
 function sendState(c){ try{ c.open&&c.send(stateObj()); }catch(e){} }
 function broadcastState(){ if(isCtl()) return; conns.forEach(sendState); }
@@ -1089,50 +1039,29 @@ function connectRemote(){
 }
 function onHostData(d){
   if(!d) return;
-  if(d.t==='lvl'){ $('lvl').style.width=d.p+'%'; const led=$('led'); led.textContent=d.open?'● hablando':'● silencio'; led.classList.toggle('on',d.open); return; }
+  if(d.t==='lvl'){ $('lvl').style.width=d.p+'%'; $('lvl').classList.toggle('open',d.open); return; }
   if(d.t!=='state') return;
   Object.entries(d.params||{}).forEach(([k,v])=>{ if($(k)){ $(k).value=v; $(k+'O').textContent=fmt[k](+v); } });
-  $('volO2').textContent=fmt.vol(+d.params.vol); markSpk(); $('thrMark').style.left=((+d.params.thr+70)/70*100)+'%';
+  $('volO2').textContent=fmt.vol(+d.params.vol); $('thrMark').style.left=((+d.params.thr+70)/70*100)+'%';
   Object.entries(d.toggles||{}).forEach(([k,v])=>{ if($(k)) $(k).checked=!!v; });
   document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===d.preset));
-  $('saber').classList.toggle('on',d.saber); $('saber').textContent=d.saber?'Apagar sable':'Encender sable'; $('sbSaber').classList.toggle('on',d.saber); $('sbSaber').textContent=d.saber?'Apagar sable':'Sable';
+  $('saber').classList.toggle('on',d.saber); $('saber').textContent=d.saber?'Apagar sable':'Encender sable';
   muted=d.muted; $('muteBtn').classList.toggle('on',d.muted); $('muteBtn').textContent=d.muted?'Activar voz':'Silenciar';
   vader=d.vader; $('vaderBtn').classList.toggle('real',!d.vader); $('vaderBtn').textContent=d.vader?'Voz Vader':'Mi voz';
-  breathSel=d.breathSel; musicId=d.musicId; lineId=d.lineId; syncLibraryUI(); updChip(); updPrep();
+  breathSel=d.breathSel; musicId=d.musicId; lineId=d.lineId; syncLibraryUI(); updChip();
   if(mode==='remote'){ $('btn').classList.toggle('on',d.running); $('btn').textContent=d.running?'Conectado':'Bocina apagada'; }
-  renderPads(d.pads||[]);
 }
-
-// ---------- Mis sonidos (guardados en el navegador de la compu) ----------
-let padSrc=[];
-function idb(){ return new Promise((res,rej)=>{ const r=indexedDB.open('vader-pads',1); r.onupgradeneeded=()=>r.result.createObjectStore('pads'); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
-async function loadPadStore(){ try{ const db=await idb(); return await new Promise(res=>{ const q=db.transaction('pads').objectStore('pads').get('list'); q.onsuccess=()=>res(q.result||[]); q.onerror=()=>res([]); }); }catch(e){ return []; } }
-async function savePadStore(list){ try{ const db=await idb(); db.transaction('pads','readwrite').objectStore('pads').put(list,'list'); }catch(e){} }
-async function initPads(){ pads=(await loadPadStore()).map(p=>({name:p.name,blob:p.blob,buf:null})); renderPads(); }
-async function decodePads(){ if(!ctx) return; for(const p of pads){ if(!p.buf){ try{ p.buf=await ctx.decodeAudioData(await p.blob.arrayBuffer()); }catch(e){} } } }
-function renderPads(names){
-  const list=names||pads.map(p=>p.name), box=$('pads'); box.innerHTML='';
-  if(!list.length){ box.innerHTML='<p class="help" style="grid-column:1/-1">Aún no hay sonidos propios.</p>'; return; }
-  list.forEach((n,i)=>box.appendChild(btn(n,null,'',()=>runCmd('pad',i))));
-}
-async function playPad(i){ const p=pads[i]; if(!p) return; if(!p.buf) await decodePads(); if(!p.buf) return;
-  const s=ctx.createBufferSource(); s.buffer=p.buf; s.connect(nodes.sfx); s.start(); padSrc.push(s); s.onended=()=>{ padSrc=padSrc.filter(x=>x!==s); }; }
-$('padFiles').addEventListener('change',async e=>{ const files=[...e.target.files]; if(!files.length) return;
-  files.forEach(f=>pads.push({name:f.name.replace(/\.[^.]+$/,'').slice(0,40),blob:f,buf:null}));
-  await savePadStore(pads.map(p=>({name:p.name,blob:p.blob}))); renderPads(); decodePads(); broadcastState(); e.target.value=''; });
-$('padClear').addEventListener('click',async()=>{ pads=[]; await savePadStore([]); renderPads(); broadcastState(); });
 
 // ---------- Ajustes ----------
 function apply(id){
   const v=+$(id).value; $(id+'O').textContent=fmt[id](v);
   if(id==='vol') $('volO2').textContent=fmt.vol(v);
   if(id==='thr') $('thrMark').style.left=((v+70)/70*100)+'%';
-  if(id.startsWith('eq')) markSpk();
   if(!ctx) return;
   const n=nodes, t=ctx.currentTime;
   switch(id){
     case 'semi': n.shift.parameters.get('ratio').setValueAtTime(Math.pow(2,v/12),t); break;
-    case 'helmet': n.combFb.gain.setTargetAtTime(v,t,0.03); n.combOut.gain.setTargetAtTime(0.25+v,t,0.03); break;
+    case 'helmet': n.combFb.gain.setTargetAtTime(v,t,0.03); n.combOut.gain.setTargetAtTime(Math.min(1,v*3),t,0.03); break;
     case 'dist': n.shaper.curve=curve(v); n.shPost.gain.setTargetAtTime(1-v*0.35,t,0.03); break;
     case 'rev': n.verbWet.gain.setTargetAtTime(v,t,0.03); break;
     case 'breathVol': n.breathVol.gain.setTargetAtTime(v,t,0.03); n.bedVol.gain.setTargetAtTime(v,t,0.03); break;
@@ -1151,22 +1080,16 @@ function applyAll(){ IDS.forEach(apply); }
 // al subir una banda, se baja un poco el total para que no sature la bocina
 function eqTrim(){ if(!ctx) return; const mx=Math.max(0,+$('eqLow').value,+$('eqMid').value,+$('eqHigh').value);
   nodes.eqTrim.gain.setTargetAtTime(Math.pow(10,-mx*0.6/20),ctx.currentTime,0.05); }
-// puntos de partida por tipo de bocina (estimados: ajusta de oído)
-const SPK={plano:[0,0,0], jbl:[-2,1,2], chica:[0,3,1], cel:[-6,4,0], grande:[3,0,1]};
-function markSpk(){ const cur=[+$('eqLow').value,+$('eqMid').value,+$('eqHigh').value];
-  document.querySelectorAll('#spkPresets .chip').forEach(c=>{ const v=SPK[c.dataset.s]; c.classList.toggle('sel',!!v&&v.every((x,i)=>x===cur[i])); }); }
-function setSpk(k){ const v=SPK[k]; if(!v) return; ['eqLow','eqMid','eqHigh'].forEach((id,i)=>{ $(id).value=v[i]; $(id).dispatchEvent(new Event('input')); }); }
 function applyPreset(name){
-  document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===name));
   Object.entries(PRESETS[name]).forEach(([k,v])=>{ $(k).value=v; apply(k); }); save();
 }
 function save(){
   try{ const s={}; IDS.forEach(id=>s[id]=$(id).value); TOGGLES.forEach(id=>s[id]=$(id).checked); s.aec=$('aec').checked; s.breathSel=breathSel;
-    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader7',JSON.stringify(s)); }catch(e){}
+    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader8',JSON.stringify(s)); }catch(e){}
   broadcastState();
 }
 function load(){
-  try{ const s=JSON.parse(localStorage.getItem('vader7')||'null'); if(!s) return;
+  try{ const s=JSON.parse(localStorage.getItem('vader8')||'null'); if(!s) return;
     IDS.forEach(id=>{ if(s[id]!=null) $(id).value=s[id]; }); TOGGLES.forEach(id=>{ if(s[id]!=null) $(id).checked=!!s[id]; });
     $('aec').checked=!!s.aec; if(s.breathSel) breathSel=s.breathSel;
     if(s.preset) document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===s.preset));
@@ -1174,16 +1097,13 @@ function load(){
 }
 IDS.forEach(id=>$(id).addEventListener('input',()=>{ apply(id); if(isCtl()){ send({t:'set',id,v:$(id).value}); return; } save(); }));
 TOGGLES.forEach(id=>$(id).addEventListener('change',()=>{ if(isCtl()){ send({t:'set',id,v:$(id).checked}); return; } save(); }));
-$('aec').addEventListener('change',async()=>{ save(); if(running&&mode==='solo'){ try{ await openMic(); }catch(e){} } });
+$('aec').addEventListener('change',async()=>{ save(); await listMics(); if(running&&mode==='solo'){ try{ await openMic(); }catch(e){} } });
 $('presets').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b) return; if(isCtl()){ send({t:'preset',p:b.dataset.p}); return; } applyPreset(b.dataset.p); });
 
 // ---------- Botones ----------
 $('btn').addEventListener('click',()=>{ if(mode==='remote'){ connectRemote(); return; } running?stop():start(); });
 $('vaderBtn').addEventListener('click',()=>runCmd('vader'));
 $('muteBtn').addEventListener('click',()=>runCmd('mute'));
-$('volBtn').addEventListener('click',()=>{ $('volSheet').hidden=false; });
-$('volClose').addEventListener('click',()=>{ $('volSheet').hidden=true; });
-$('volSheet').addEventListener('click',e=>{ if(e.target.id==='volSheet') $('volSheet').hidden=true; });
 document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{ const [id,d]=b.dataset.step.split(':'); const el=$(id);
   el.value=Math.max(+el.min,Math.min(+el.max,Math.round((+el.value+ +d)*20)/20)); el.dispatchEvent(new Event('input')); }));
 $('musicQuick').addEventListener('click',()=>{ if(man.music[0]) runCmd('music',man.music[0].id); });
@@ -1199,23 +1119,30 @@ $('tabs').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!
 
 // ---------- Modos ----------
 const HELP={
-  solo:'Esta compu capta tu voz y la saca por la bocina. Al encender aparece un código para controlarla desde el celular.',
-  remote:'Este celular controla la compu: frases, efectos, música, voz y volumen. Escribe el código de la compu y toca Conectar.',
-  bocina:'Prueba de dos celulares: este va conectado a la JBL. Toca Encender y escribe el código en el otro celular. Desde aquí también controlas todo.',
-  mic:'Prueba de dos celulares: este va con tus audífonos. Escribe el código de la bocina y toca Encender; luego en Ajustes elige tus audífonos como micrófono. Desde aquí también controlas todo.'
+  solo:'El micrófono y la bocina van conectados a este celular (o compu).',
+  remote:'Este celular controla otro aparato. Escribe arriba el código que muestra el otro aparato y toca Conectar.',
+  bocina:'Este celular va con la bocina. Toca Encender y escribe el código que aparece arriba en el otro celular.',
+  mic:'Este celular capta tu voz y la manda a la bocina. Escribe arriba el código de la bocina y toca Encender.'
 };
+const MODE_NAME={solo:'',remote:'Control remoto',bocina:'Bocina',mic:'Micrófono'};
 function setMode(m){
   mode=m;
   document.querySelectorAll('#modes .chip').forEach(c=>c.classList.toggle('sel',c.dataset.m===m));
   $('modeHelp').textContent=HELP[m];
-  setTimeout(()=>{ updChip(); updPrep(); },0);
-  $('modeName').textContent={solo:'Un solo aparato',remote:'Control remoto',bocina:'Bocina',mic:'Micrófono + control'}[m];
+  setTimeout(updChip,0);
+  $('modeName').textContent=MODE_NAME[m]; $('modeName').hidden=!MODE_NAME[m];
   $('bocinaBox').hidden=true; $('micBox').hidden=!(m==='mic'||m==='remote');
-  document.body.classList.remove('nodock');
-  $('micRow').hidden=m==='remote'; if(NATIVE_OUT){ $('outRow').hidden=(m==='remote'||m==='mic'); $('outTools').hidden=$('outRow').hidden; } ['aecRow','padLoad'].forEach(id=>$(id).hidden=(m==='remote'||m==='mic')); if(m==='remote'||m==='mic'){ $('outRow').hidden=true; $('outHelp').hidden=true; }
+  // solo se ve lo que sirve para el modo elegido
+  $('devSec').hidden=(m==='remote');
+  $('micRow').hidden=(m==='bocina'||m==='remote');
+  $('outRow').hidden=!(m==='solo'||m==='bocina') || (!NATIVE_OUT && $('out').options.length<2);
+  $('outTools').hidden=!NATIVE_OUT || !(m==='solo'||m==='bocina');
+  $('testSnd').hidden=(m==='mic');
+  if(m==='remote'||m==='mic') $('outHelp').hidden=true;
+  $('aecRow').hidden=!!NATIVE_IN || m!=='solo';
   $('btn').textContent=m==='remote'?'Conectar':'Encender';
   if(m==='remote'||m==='mic'){ try{ const c=localStorage.getItem('vaderCode'); if(c) $('code').value=c; }catch(e){} }
-  setStatus(m==='remote'?'Escribe el código de la compu y toca Conectar':m==='mic'?'Escribe el código y toca Encender':'Toca Encender');
+  setStatus(m==='remote'?'Escribe el código y toca Conectar':m==='mic'?'Escribe el código y toca Encender':'Toca Encender');
   try{ localStorage.setItem('vaderMode',m); }catch(e){}
 }
 $('modes').addEventListener('click',async e=>{ const b=e.target.closest('.chip'); if(!b||b.dataset.m===mode) return; if(running||remoteConn) await stop(); setMode(b.dataset.m); });
@@ -1226,7 +1153,7 @@ let rec=null, recOn=false, lastCmd={};
 function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
 let toastT=0;
 function toast(msg,warn){ const t=$('toast'); t.textContent=msg; t.className='toast'+(warn?' warn':''); t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>{ t.hidden=true; },warn?2600:1700); }
-function heardFlash(){ ['chipCmd','showCmd'].forEach(id=>{ const e=$(id); e.classList.add('heard'); setTimeout(()=>e.classList.remove('heard'),1500); }); }
+function heardFlash(){ const e=$('chipCmd'); e.classList.add('heard'); setTimeout(()=>e.classList.remove('heard'),1500); }
 function fire(a,arg,label){
   const k=a+(arg||''), now=performance.now(); if(lastCmd[k] && now-lastCmd[k]<2500) return; lastCmd[k]=now;
   runCmd(a,arg); $('cmdLog').textContent='✓ '+label;
@@ -1241,51 +1168,36 @@ function bestLine(q){
   return bs>=0.5?best:null;
 }
 const CMD_DEFS=[
-  {a:'intro',   label:'Entrada: Marcha Imperial + respiración', def:'que comience el espectáculo'},
-  {a:'musicPlay',label:'Poner la Marcha Imperial', def:'el imperio ha llegado, contemplen'},
+  {a:'musicPlay',label:'Poner la música', def:'el imperio ha llegado'},
   {a:'musicStop',label:'Quitar la música', def:'silencio'},
-  {a:'saberOn', label:'Encender el sable', def:'en guardia, prepárate para morir'},
+  {a:'vaderOff',label:'Cambiar a mi voz', def:'déjame verte con mis propios ojos'},
+  {a:'vaderOn', label:'Volver a la voz de Vader', def:'así debe ser'},
+  {a:'saberOn', label:'Encender el sable', def:'en guardia'},
+  {a:'saberOff',label:'Apagar el sable', def:'ya basta'},
   {a:'swing',   label:'Movimiento del sable', def:'observa'},
   {a:'clash',   label:'Choque del sable', def:'insolente'},
-  {a:'saberOff',label:'Apagar el sable', def:'es suficiente, ya basta'},
   {a:'breath',  label:'Respirar', def:'siento tu presencia'},
-  {a:'stopAll', label:'Callar todo (música, sable, frases)', def:'retírense'},
-  {a:'vaderOff',label:'Pasar a mi voz real', def:'déjame verte con mis propios ojos'},
-  {a:'vaderOn', label:'Volver a la voz de Vader', def:'así debe ser'},
-  {a:'muteOn',  label:'Silenciar la bocina (hablo sin amplificar)', def:'tiempo fuera'},
-  {a:'muteOff', label:'Volver a sonar por la bocina', def:'continuemos'},
-  {a:'volUp',   label:'Subir volumen', def:'escuchen bien, atención'},
-  {a:'volDown', label:'Bajar volumen', def:'más despacio'}
+  {a:'stopAll', label:'Callar todo', def:'retírense'},
+  {a:'muteOn',  label:'Silenciar mi voz', def:'tiempo fuera'},
+  {a:'muteOff', label:'Volver a sonar', def:'continuemos'}
 ];
-const CMD_DONE={intro:'Entrada',musicPlay:'Marcha Imperial',musicStop:'Música fuera',saberOn:'Sable encendido',swing:'Sable',clash:'Choque',saberOff:'Sable apagado',breath:'Respiración',stopAll:'Todo callado',vaderOff:'Voz real',vaderOn:'Voz Vader',muteOn:'Bocina silenciada',muteOff:'Bocina activa',volUp:'Volumen +',volDown:'Volumen −'};
+const CMD_DONE={musicPlay:'Música',musicStop:'Música fuera',saberOn:'Sable encendido',swing:'Sable',clash:'Choque',saberOff:'Sable apagado',breath:'Respiración',stopAll:'Todo callado',vaderOff:'Mi voz',vaderOn:'Voz Vader',muteOn:'Silenciado',muteOff:'Voz activa'};
 let cmdPhrases={};
 function loadCmdPhrases(){ try{ cmdPhrases=JSON.parse(localStorage.getItem('vaderCmds')||'{}'); }catch(e){ cmdPhrases={}; }
   CMD_DEFS.forEach(c=>{ if(cmdPhrases[c.a]==null) cmdPhrases[c.a]=c.def; }); }
 function saveCmdPhrases(){ try{ localStorage.setItem('vaderCmds',JSON.stringify(cmdPhrases)); }catch(e){} }
 function renderCmdEdit(){
   const box=$('cmdEdit'); box.innerHTML='';
-  CMD_DEFS.forEach(c=>{ const row=document.createElement('div'); row.className='row cmdRow'; row.id='row-'+c.a;
+  CMD_DEFS.forEach(c=>{ const row=document.createElement('div'); row.className='cmdRow'; row.id='row-'+c.a;
     const lab=document.createElement('label'); lab.textContent=c.label; lab.htmlFor='cmd-'+c.a;
     const inp=document.createElement('input'); inp.id='cmd-'+c.a; inp.type='text'; inp.value=cmdPhrases[c.a]||''; inp.placeholder='(sin comando)';
-    inp.style.cssText='grid-column:1/-1;padding:10px;background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:6px;font-size:15px';
     inp.addEventListener('change',()=>{ cmdPhrases[c.a]=inp.value; saveCmdPhrases(); refreshGrammar(); });
-    row.appendChild(lab); row.appendChild(document.createElement('output')); row.appendChild(inp); box.appendChild(row); });
-  renderCheat();
-}
-function renderCheat(){
-  const box=$('cheatList'); if(!box) return; box.innerHTML='';
-  CMD_DEFS.forEach(c=>{ const ph=(cmdPhrases[c.a]||'').split(',').map(x=>x.trim()).filter(Boolean); if(!ph.length) return;
-    const d=document.createElement('div'); const b=document.createElement('b'); b.textContent=c.label; const sp=document.createElement('span');
-    sp.innerHTML=ph.map(x=>'“'+x+'”').join(' <i>o</i> '); d.appendChild(b); d.appendChild(sp); box.appendChild(d); });
-  if($('lineKwOn').checked && $('lineKw').value.trim()){ const d=document.createElement('div'); const b=document.createElement('b'); b.textContent='Frase grabada';
-    const sp=document.createElement('span'); sp.innerHTML='“'+$('lineKw').value.trim()+' …” <i>+ las palabras de la frase (ej. “'+$('lineKw').value.trim()+' yo soy tu padre”)</i>'; d.appendChild(b); d.appendChild(sp); box.appendChild(d); }
+    row.appendChild(lab); row.appendChild(inp); box.appendChild(row); });
 }
 function handleSpeech(raw,conf){
   const s=' '+norm(raw)+' '; if(!s.trim()) return;
   $('cmdLog').textContent='Escuché: "'+raw.trim()+'"'+(conf!=null?' ('+Math.round(conf*100)+'%)':'');
   if(conf!=null && conf<0.6){ $('cmdLog').textContent+=' · no muy claro, repite más despacio'; return; }
-  if($('lineKwOn').checked){ const kw=norm($('lineKw').value);
-    if(kw && s.includes(' '+kw+' ')){ const l=bestLine(s.split(' '+kw+' ').slice(1).join(' ')); if(l){ fire('line',l.id,'Frase: '+l.es); return; } } }
   for(const c of CMD_DEFS){
     const opts=(cmdPhrases[c.a]||'').split(',').map(norm).filter(x=>x.length>=3);
     if(opts.some(o=>s.includes(' '+o+' '))){ fire(c.a, c.a==='musicPlay'&&man.music[0]?man.music[0].id:null, c.label); return; }
@@ -1297,7 +1209,6 @@ function normG(x){ return (x||'').toLowerCase().replace(/[^a-z0-9áéíóúüñ 
 function grammarList(){
   const g=new Set();
   CMD_DEFS.forEach(c=>(cmdPhrases[c.a]||'').split(',').map(normG).filter(x=>x.length>=3).forEach(x=>g.add(x)));
-  if($('lineKwOn').checked){ const kw=normG($('lineKw').value); if(kw) man.lines.forEach(l=>g.add(kw+' '+normG(l.es))); }
   g.add('[unk]'); return [...g];
 }
 function voiceTap(){
@@ -1350,78 +1261,34 @@ function stopRec(silent){
   if(vOwnStream){ vOwnStream.getTracks().forEach(t=>t.stop()); vOwnStream=null; } if(vOwnCtx){ try{ vOwnCtx.close(); }catch(_){} vOwnCtx=null; }
   vReady=false; if(silent) $('voiceCmd').checked=false; $('cmdLog').textContent='Apagado.'; updCmdChip();
 }
-function updCmdChip(){ const on=recOn; ['chipCmd','showCmd'].forEach(id=>{ const e=$(id); if(e) e.hidden=!on; }); }
+function updCmdChip(){ $('chipCmd').hidden=!recOn; }
 function refreshGrammar(){ if(vReady && vModel && vNode) buildVoskRecognizer(vNode.context.sampleRate); }
 loadCmdPhrases(); renderCmdEdit();
-try{ const k=JSON.parse(localStorage.getItem('vaderKw')||'null'); if(k){ $('lineKwOn').checked=!!k.on; if(k.kw) $('lineKw').value=k.kw; } }catch(e){}
-['lineKwOn','lineKw'].forEach(id=>$(id).addEventListener('change',()=>{ refreshGrammar(); renderCheat(); try{ localStorage.setItem('vaderKw',JSON.stringify({on:$('lineKwOn').checked,kw:$('lineKw').value})); }catch(e){} }));
 $('voiceCmd').addEventListener('change',()=>{ $('voiceCmd').checked?startRec():stopRec(); });
 try{ $('cmdAuto').checked=localStorage.getItem('vaderCmdAuto')==='1'; }catch(e){}
 $('cmdAuto').addEventListener('change',()=>{ try{ localStorage.setItem('vaderCmdAuto',$('cmdAuto').checked?'1':'0'); }catch(e){} });
 function autoCmds(){ if($('cmdAuto').checked && !recOn && (window.Vosk||SR)){ $('voiceCmd').checked=true; startRec(); } }
-$('spkPresets').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(b) setSpk(b.dataset.s); });
-$('cheatOpen').addEventListener('click',()=>{ renderCheat(); $('cheat').hidden=false; });
-$('cheatClose').addEventListener('click',()=>{ $('cheat').hidden=true; });
-$('cheat').addEventListener('click',e=>{ if(e.target===$('cheat')) $('cheat').hidden=true; });
 
-// ---------- Favoritas, buscador, estado, preparar, modo show ----------
-let favIds=['f01','f08','f10','f03','f37','f39','f16','f17'];
-try{ const fv=JSON.parse(localStorage.getItem('vaderFavs')||'null'); if(Array.isArray(fv)) favIds=fv; }catch(e){}
-function toggleFav(id){
-  favIds=favIds.includes(id)?favIds.filter(x=>x!==id):[...favIds,id];
-  try{ localStorage.setItem('vaderFavs',JSON.stringify(favIds)); }catch(e){}
-  renderLibrary();
-}
-function normQ(x){ return (x||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
-function filterLines(){
-  const q=normQ($('q').value.trim());
-  document.querySelectorAll('#tab-frases .line').forEach(b=>{ b.hidden=!!q && !normQ(b.textContent).includes(q); });
-  document.querySelectorAll('#tab-frases section').forEach(sec=>{ if(sec.classList.contains('findBar')) return; const any=[...sec.querySelectorAll('.line')].some(b=>!b.hidden); sec.hidden=!any; });
-}
-$('q').addEventListener('input',filterLines);
-$('favEdit').addEventListener('change',()=>{ $('tab-frases').classList.toggle('favEditing',$('favEdit').checked); setStatus($('favEdit').checked?'Toca las frases para marcar o quitar ★':'Favoritas guardadas'); });
+// ---------- Estado visible ----------
 function updChip(){
   const c=$('chipSt'); if(!c) return;
   let t='Apagado', k='off';
-  if(mode==='remote'){ const on=remoteConn&&remoteConn.open; t=on?'Conectado':'Sin conectar'; k=on?'link':'off'; if(on&&muted){ t='Silenciado'; k='mute'; } else if(on&&!vader){ t='Voz normal'; k='real'; } }
-  else if(running){ if(muted){ t='Silenciado'; k='mute'; } else if(!vader){ t='Voz normal'; k='real'; } else { t='Vader activo'; k='live'; } }
-  c.textContent=t; c.className='chipSt '+k; const sc=$('showChip'); if(sc){ sc.textContent=t; sc.className='chipSt '+k; }
-  $('sbVader').textContent=vader?'Voz Vader':'Mi voz'; $('sbVader').classList.toggle('real',!vader);
-  $('sbMute').textContent=muted?'Activar voz':'Silenciar'; $('sbMute').classList.toggle('on',muted);
+  if(mode==='remote'){ const on=remoteConn&&remoteConn.open; t=on?'Conectado':'Sin conectar'; k=on?'link':'off'; if(on&&muted){ t='Silenciado'; k='mute'; } else if(on&&!vader){ t='Mi voz'; k='real'; } }
+  else if(running){ if(muted){ t='Silenciado'; k='mute'; } else if(!vader){ t='Mi voz'; k='real'; } else { t='Vader activo'; k='live'; } }
+  c.textContent=t; c.className='chipSt '+k;
 }
-function updPrep(){
-  const names={solo:'Un solo aparato',remote:'Control remoto',bocina:'Bocina (2 celulares)',mic:'Micrófono + control'};
-  const mic=($('mic').selectedOptions[0]||{}).textContent||'predeterminado';
-  const out=$('outRow').hidden?'':(' · Bocina: '+(($('out').selectedOptions[0]||{}).textContent||'automática'));
-  $('prepSum').textContent=(running||(mode==='remote'&&remoteConn&&remoteConn.open))
-    ? names[mode]+(mode==='remote'?'':' · Mic: '+mic+out)+'  (toca para cambiar)'
-    : 'Elige cómo lo vas a usar, el micrófono y la bocina';
-  if(running) $('prep').open=false; else if(mode!=='remote') $('prep').open=true;
-}
-$('testSnd').addEventListener('click',()=>{ if(!running && mode!=='remote'){ setStatus('Primero toca Encender, luego Probar sonido.'); return; } runCmd('line','f37'); setStatus('Probando: debe sonar "Impresionante" por la bocina'); });
-// Modo show
-$('showOpen').addEventListener('click',()=>{ $('showMode').hidden=false; updChip(); try{ document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){} });
-$('showGrid').addEventListener('click',e=>{ const b=e.target.closest('.sb'); if(!b) return; const a=b.dataset.a;
-  if(a.startsWith('fav')){ if(b.dataset.id) runCmd('line',b.dataset.id); return; }
-  if(a==='musicT'){ if(man.music[0]) runCmd('music',man.music[0].id); return; }
-  runCmd(a); });
-(()=>{ let t=0; const ex=$('showExit');
-  const down=e=>{ e.preventDefault(); ex.classList.add('hold'); t=setTimeout(()=>{ ex.classList.remove('hold'); $('showMode').hidden=true; try{ document.fullscreenElement&&document.exitFullscreen(); }catch(_){} },800); };
-  const up=()=>{ clearTimeout(t); ex.classList.remove('hold'); };
-  ex.addEventListener('pointerdown',down); ['pointerup','pointerleave','pointercancel'].forEach(k=>ex.addEventListener(k,up)); })();
+$('testSnd').addEventListener('click',()=>{ if(!running && mode!=='remote'){ setStatus('Primero toca Encender, luego Probar sonido.'); return; } runCmd('line',TEST_LINE); setStatus('Probando: debe sonar "Muy impresionante" por la bocina'); });
 // Vibración corta al tocar (confirma sin mirar)
 document.addEventListener('click',e=>{ if(e.target.closest('button,.big,.chip') && navigator.vibrate){ try{ navigator.vibrate(12); }catch(_){} } },true);
 
 // ---------- Inicio ----------
 load(); applyAll();
-let startMode=/Android|iPhone|iPad/i.test(navigator.userAgent)?'remote':'solo';
+let startMode=(/VaderApp/.test(navigator.userAgent)||!/Android|iPhone|iPad/i.test(navigator.userAgent))?'solo':'remote';
 try{ startMode=localStorage.getItem('vaderMode')||startMode; }catch(e){}
 setMode(startMode);
-loadManifest(); initPads(); if(NATIVE_OUT) listOuts();
-// indicador de segundo plano (solo en la app de Android)
-setInterval(()=>{ const d=$('bgState'); if(!window.VaderNative||!VaderNative.isAlive){ d.className='dot'; return; }
-  let on=false; try{ on=VaderNative.isAlive(); }catch(e){}
-  d.className='dot '+((running||remoteWanted)?(on?'on':'off'):''); d.title=on?'Sigue funcionando con la pantalla apagada':'Segundo plano inactivo'; },2000);
+loadManifest(); if(NATIVE_OUT) listOuts();
+if(NATIVE_IN){ $('aec').checked=false; }
+
 if(!window.isSecureContext) setStatus('Abre la app desde un enlace https.');
 if('serviceWorker' in navigator && !/VaderApp/.test(navigator.userAgent)){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 
