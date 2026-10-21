@@ -1,4 +1,4 @@
-const CACHE='vader-v17';
+const CACHE='vader-v18';
 const CORE=["./", "./index.html", "./peerjs.min.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./sounds/sounds.json", "./sounds/f01.mp3", "./sounds/f08.mp3", "./sounds/f10.mp3", "./sounds/f03.mp3", "./sounds/f17.mp3", "./sounds/f39.mp3", "./sounds/f31.mp3", "./sounds/f26.mp3", "./sounds/b1.mp3", "./sounds/marcha.mp3", "./sounds/saber.mp3"];
 const CDN=[];
 self.addEventListener('install',e=>{ e.waitUntil((async()=>{ const c=await caches.open(CACHE);
