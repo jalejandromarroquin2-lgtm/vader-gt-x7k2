@@ -84,6 +84,8 @@ section>h2{margin:0}
 .chip{font:800 18px var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--panel2);color:var(--fg);border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:56px}
 .chip.sel{border-color:var(--red);background:var(--red-dim)}
 .modeList{display:grid;gap:8px}
+#aecLv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#aecLv .chip{padding:10px 4px;font-size:16px;min-height:52px}
 .modeList .chip{text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .modeList .chip small{font:500 14px system-ui,sans-serif;text-transform:none;letter-spacing:0;color:var(--mute)}
 .big{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;text-align:center;background:var(--panel2);color:var(--fg);border:2px solid var(--line);border-radius:12px;
@@ -199,6 +201,10 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
         <select id="mic" class="sel"><option value="">Micrófono predeterminado</option></select></div>
       <div class="vrow" id="gainRow"><span>Sensibilidad del micrófono</span><button type="button" data-step="inGain:-0.1">−</button><input id="inGain" type="range" min="0.3" max="4" step="0.05" value="1.1" aria-label="Sensibilidad del micrófono"><button type="button" data-step="inGain:0.1">+</button><output id="inGainO"></output></div>
       <div class="vrow" id="thrRow"><span>Filtro de ruido <small>(más alto = ignora más ruido de fondo)</small></span><button type="button" data-step="thr:-1">−</button><input id="thr" type="range" min="-70" max="-15" step="1" value="-38" aria-label="Filtro de ruido"><button type="button" data-step="thr:1">+</button><output id="thrO"></output></div>
+      <div class="field" id="aecBox"><label>Anti-eco <small style="font-weight:400;color:var(--mute)">(que el micro no capte tu voz saliendo de la bocina)</small></label>
+        <div class="chips" id="aecLv"><button class="chip" data-l="0" type="button">Apagado</button><button class="chip" data-l="1" type="button">Bajo</button><button class="chip sel" data-l="2" type="button">Medio</button><button class="chip" data-l="3" type="button">Alto</button></div>
+        <button class="big" id="aecCal" type="button">Medir eco<small>Suena un bip corto por la bocina</small></button>
+        <p class="help" id="aecInfo">Al encender suena un bip: la app mide cuánto tarda la bocina y cuánto se cuela al micro, y con eso quita tu voz cuando regresa.</p></div>
       <div class="field" id="outRow" hidden><label for="out">Bocina</label>
         <select id="out" class="sel"><option value="">Automática</option></select></div>
       <p class="help" id="outHelp" hidden>Este navegador no deja elegir la salida. En Mac: Ajustes del Sistema → Sonido → Salida.</p>
@@ -215,11 +221,15 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
 
     <section id="voiceSec">
       <h2>Voz de Vader</h2>
+      <p class="help">Elige un punto de partida y ajusta cada efecto a tu gusto.</p>
       <div class="vrow"><span>Tono <small>(más abajo = más grave)</small></span><button type="button" data-step="semi:-0.5">−</button><input id="semi" type="range" min="-9" max="0" step="0.5" value="-3" aria-label="Tono"><button type="button" data-step="semi:0.5">+</button><output id="semiO"></output></div>
-      <div class="vrow"><span>Graves</span><button type="button" data-step="eqLow:-1">−</button><input id="eqLow" type="range" min="-12" max="12" step="1" value="-10" aria-label="Graves"><button type="button" data-step="eqLow:1">+</button><output id="eqLowO"></output></div>
+      <div class="vrow"><span>Casco <small>(resonancia metálica)</small></span><button type="button" data-step="helmet:-0.05">−</button><input id="helmet" type="range" min="0" max="0.7" step="0.01" value="0.2" aria-label="Casco"><button type="button" data-step="helmet:0.05">+</button><output id="helmetO"></output></div>
+      <div class="vrow"><span>Distorsión <small>(parlante del casco)</small></span><button type="button" data-step="dist:-0.05">−</button><input id="dist" type="range" min="0" max="1" step="0.01" value="0.2" aria-label="Distorsión"><button type="button" data-step="dist:0.05">+</button><output id="distO"></output></div>
+      <div class="vrow"><span>Eco de sala <small>(reverberación)</small></span><button type="button" data-step="rev:-0.05">−</button><input id="rev" type="range" min="0" max="0.6" step="0.01" value="0" aria-label="Eco"><button type="button" data-step="rev:0.05">+</button><output id="revO"></output></div>
+      <div class="vrow"><span>Graves</span><button type="button" data-step="eqLow:-1">−</button><input id="eqLow" type="range" min="-12" max="12" step="1" value="0" aria-label="Graves"><button type="button" data-step="eqLow:1">+</button><output id="eqLowO"></output></div>
       <div class="vrow"><span>Medios</span><button type="button" data-step="eqMid:-1">−</button><input id="eqMid" type="range" min="-12" max="12" step="1" value="0" aria-label="Medios"><button type="button" data-step="eqMid:1">+</button><output id="eqMidO"></output></div>
-      <div class="vrow"><span>Agudos</span><button type="button" data-step="eqHigh:-1">−</button><input id="eqHigh" type="range" min="-12" max="12" step="1" value="5" aria-label="Agudos"><button type="button" data-step="eqHigh:1">+</button><output id="eqHighO"></output></div>
-      <div class="chips" id="presets"><button class="chip" data-p="vader" type="button">Restablecer voz clara</button></div>
+      <div class="vrow"><span>Agudos</span><button type="button" data-step="eqHigh:-1">−</button><input id="eqHigh" type="range" min="-12" max="12" step="1" value="0" aria-label="Agudos"><button type="button" data-step="eqHigh:1">+</button><output id="eqHighO"></output></div>
+      <div class="chips" id="presets"><button class="chip sel" data-p="clasico" type="button">Clásico</button><button class="chip" data-p="grave" type="button">Más grave</button><button class="chip" data-p="metal" type="button">Casco metálico</button><button class="chip" data-p="clara" type="button">Clara</button></div>
     </section>
 
     <section id="cmdSec">
@@ -247,10 +257,6 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
         <label class="check"><input id="autoBreath" type="checkbox"> Respirar solo cuando me callo</label>
         <label class="check"><input id="duckMusic" type="checkbox" checked> Bajar la música cuando hablo</label>
         <div id="musicBox" hidden><h2>Música</h2><div class="pad" id="musicList"></div></div>
-        <h2>Efecto robótico</h2>
-        <div class="vrow"><span>Casco (resonancia)</span><button type="button" data-step="helmet:-0.05">−</button><input id="helmet" type="range" min="0" max="0.7" step="0.01" value="0.08" aria-label="Casco"><button type="button" data-step="helmet:0.05">+</button><output id="helmetO"></output></div>
-        <div class="vrow"><span>Distorsión</span><button type="button" data-step="dist:-0.05">−</button><input id="dist" type="range" min="0" max="1" step="0.01" value="0.12" aria-label="Distorsión"><button type="button" data-step="dist:0.05">+</button><output id="distO"></output></div>
-        <div class="vrow"><span>Eco de sala</span><button type="button" data-step="rev:-0.05">−</button><input id="rev" type="range" min="0" max="0.6" step="0.01" value="0" aria-label="Eco"><button type="button" data-step="rev:0.05">+</button><output id="revO"></output></div>
         <label class="check" id="aecRow"><input id="aec" type="checkbox"> Cancelación de eco (activa modo llamada)</label>
         <h2>Ayuda</h2>
         <ul>
@@ -350,6 +356,41 @@ class MicIn extends AudioWorkletProcessor {
   }
 }
 registerProcessor('mic-in', MicIn);
+// Anti-eco: entrada 0 = micrófono, entrada 1 = lo que sale a la bocina. Con el retraso medido (bip),
+// baja el micrófono cuando lo que entra es solo la voz propia regresando desde la bocina.
+class AntiEcho extends AudioWorkletProcessor {
+  constructor(){ super(); const sr=sampleRate; this.N=Math.round(sr*2); this.h=new Float32Array(this.N); this.hi=0;
+    this.D=-1; this.coup=0; this.k=2.5; this.floor=0.12; this.gain=1; this.calGain=1;
+    this.micEnv=0; this.refEnv=0; this.sg=1;
+    this.fastA=Math.exp(-1/(0.004*sr)); this.tailA=Math.exp(-1/(0.09*sr)); this.att=Math.exp(-1/(0.002*sr)); this.rel=Math.exp(-1/(0.05*sr));
+    this.cal=0; this.calLen=Math.round(sr*1.5); this.calPos=0; this.cm=null; this.cr=null;
+    this.port.onmessage=e=>{ const d=e.data;
+      if(d.cal){ this.cal=1; this.calPos=0; this.cm=new Float32Array(this.calLen); this.cr=new Float32Array(this.calLen); this.calGain=this.gain; }
+      if(d.res){ this.D=d.D; this.coup=d.coup; }
+      if(typeof d.level==='number'){ const L=d.level; this.k=[0,1.5,2.5,4][L]||0; this.floor=[1,0.3,0.12,0.05][L]||1; }
+      if(typeof d.gain==='number') this.gain=d.gain; }; }
+  process(inputs, outputs){
+    const o=outputs[0][0]; if(!o) return true;
+    const mic=inputs[0]&&inputs[0][0], ref=inputs[1]&&inputs[1][0], N=this.N;
+    const on=this.k>0 && this.D>0 && this.D<N && this.coup>0, cp=this.coup*(this.gain/(this.calGain||1));
+    for(let i=0;i<o.length;i++){
+      let m=mic?mic[i]:0; const r=ref?ref[i]:0;
+      this.h[this.hi]=r;
+      if(this.cal===1){ this.cm[this.calPos]=m; this.cr[this.calPos]=r; if(++this.calPos>=this.calLen){ this.cal=0; this.port.postMessage({mic:this.cm,ref:this.cr},[this.cm.buffer,this.cr.buffer]); this.cm=this.cr=null; } }
+      else if(on){
+        const rv=Math.abs(this.h[(this.hi-this.D+N)%N])*cp;
+        this.refEnv=rv>this.refEnv?rv:this.tailA*this.refEnv;
+        const a=Math.abs(m); this.micEnv=a>this.micEnv?a:this.fastA*this.micEnv;
+        const tg=this.micEnv<=1e-6?1:Math.max(this.floor,Math.min(1,(this.micEnv-this.k*this.refEnv)/this.micEnv));
+        this.sg=tg<this.sg?this.att*this.sg+(1-this.att)*tg:this.rel*this.sg+(1-this.rel)*tg;
+        m*=this.sg;
+      }
+      this.hi=(this.hi+1)%N; o[i]=m;
+    }
+    return true;
+  }
+}
+registerProcessor('anti-echo', AntiEcho);
 `;
 
 // ---------- Estado ----------
@@ -363,7 +404,10 @@ let man={breaths:[],music:[],lines:[],saber:null}, bufs={};
 let breathSel='b1', bed=null, bedUp=false, forceBedUntil=0, music=null, musicId=null, lineSrc=null, lineId=null;
 // Voz clara por defecto: grave, un poco robótica, sin eco (ajuste probado por José: graves abajo, agudos arriba)
 const PRESETS={
-  vader:{semi:-3, helmet:0.08, dist:0.12, rev:0, eqLow:-10, eqMid:0, eqHigh:5}
+  clasico:{semi:-3, helmet:0.2, dist:0.2, rev:0, eqLow:0, eqMid:0, eqHigh:0},
+  grave:{semi:-5, helmet:0.2, dist:0.2, rev:0.03, eqLow:0, eqMid:0, eqHigh:0},
+  metal:{semi:-3, helmet:0.45, dist:0.45, rev:0.06, eqLow:0, eqMid:0, eqHigh:0},
+  clara:{semi:-3, helmet:0.08, dist:0.12, rev:0, eqLow:-10, eqMid:0, eqHigh:5}
 };
 const fmt={
   semi:v=>(v>0?'+':'')+v+' st', helmet:v=>Math.round(v*100)+'%', dist:v=>Math.round(v*100)+'%', rev:v=>Math.round(v/0.6*100)+'%',
@@ -398,14 +442,14 @@ async function build(){
   n.voiceMute=ctx.createGain();
   n.shift=new AudioWorkletNode(ctx,'pitch-shift',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1]});
   // Ecualización medida contra las frases reales de Vader (espectro promedio de 28 frases)
-  n.low=ctx.createBiquadFilter(); n.low.type='peaking'; n.low.frequency.value=285; n.low.Q.value=1.15; n.low.gain.value=6;
-  n.mid=ctx.createBiquadFilter(); n.mid.type='peaking'; n.mid.frequency.value=1750; n.mid.Q.value=0.55; n.mid.gain.value=-4;
+  n.low=ctx.createBiquadFilter(); n.low.type='peaking'; n.low.frequency.value=285; n.low.Q.value=1.15; n.low.gain.value=9;
+  n.mid=ctx.createBiquadFilter(); n.mid.type='peaking'; n.mid.frequency.value=1750; n.mid.Q.value=0.55; n.mid.gain.value=-7;
   n.mask=ctx.createBiquadFilter(); n.mask.type='peaking'; n.mask.frequency.value=2370; n.mask.Q.value=3; n.mask.gain.value=6;
   n.sub=ctx.createBiquadFilter(); n.sub.type='highpass'; n.sub.frequency.value=120; n.sub.Q.value=0.7;
-  n.lp2=ctx.createBiquadFilter(); n.lp2.type='lowpass'; n.lp2.frequency.value=9000; n.lp2.Q.value=0.7;
+  n.lp2=ctx.createBiquadFilter(); n.lp2.type='lowpass'; n.lp2.frequency.value=7300; n.lp2.Q.value=0.7;
   n.shaper=ctx.createWaveShaper(); n.shaper.oversample='2x';
   n.shPost=ctx.createGain();
-  n.lp=ctx.createBiquadFilter(); n.lp.type='lowpass'; n.lp.frequency.value=6500; n.lp.Q.value=0.75;
+  n.lp=ctx.createBiquadFilter(); n.lp.type='lowpass'; n.lp.frequency.value=5200; n.lp.Q.value=0.75;
   n.vaderGain=ctx.createGain(); n.dry=ctx.createGain(); n.dry.gain.value=0;
   n.helmetIn=ctx.createGain();
   n.combDelay=ctx.createDelay(0.05); n.combDelay.delayTime.value=0.0068;
@@ -422,7 +466,10 @@ async function build(){
   n.sfx=ctx.createGain(); n.musicVol=ctx.createGain(); n.musicDuck=ctx.createGain();
   n.fx=ctx.createGain(); n.voiceVol=ctx.createGain();
 
-  n.inGain.connect(n.hp); n.hp.connect(n.gate); n.gate.connect(n.voiceMute);
+  n.aec=new AudioWorkletNode(ctx,'anti-echo',{numberOfInputs:2,numberOfOutputs:1,outputChannelCount:[1],channelCount:1,channelCountMode:'explicit'});
+  n.aecDelay=ctx.createDelay(0.05); n.aecDelay.delayTime.value=0.003;
+  n.aec.port.onmessage=e=>analyzeEcho(e.data);
+  n.inGain.connect(n.aec,0,0); n.aec.connect(n.hp); n.hp.connect(n.gate); n.gate.connect(n.voiceMute);
   n.voiceMute.connect(n.shift); n.voiceMute.connect(n.dry); n.dry.connect(n.comp);
   n.shift.connect(n.sub); n.sub.connect(n.low); n.low.connect(n.mid); n.mid.connect(n.mask); n.mask.connect(n.shaper); n.shaper.connect(n.shPost); n.shPost.connect(n.lp);
   n.lp.connect(n.lp2); n.lp2.connect(n.vaderGain); n.vaderGain.gain.value=0.7; n.vaderGain.connect(n.helmetIn);
@@ -440,7 +487,7 @@ async function build(){
   n.eqHigh=ctx.createBiquadFilter(); n.eqHigh.type='highshelf'; n.eqHigh.frequency.value=4000;
   n.eqTrim=ctx.createGain();
   n.master.connect(n.eqLow); n.eqLow.connect(n.eqMid); n.eqMid.connect(n.eqHigh); n.eqHigh.connect(n.eqTrim);
-  n.eqTrim.connect(n.limiter); n.limiter.connect(ctx.destination);
+  n.eqTrim.connect(n.limiter); n.eqTrim.connect(n.aecDelay); n.aecDelay.connect(n.aec,0,1); n.limiter.connect(ctx.destination);
   n.tap=new AudioWorkletNode(ctx,'out-tap',{numberOfInputs:1,numberOfOutputs:1,outputChannelCount:[1],channelCount:2,channelCountMode:'explicit',channelInterpretation:'speakers'});
   n.tapSilent=ctx.createGain(); n.tapSilent.gain.value=0; n.tap.connect(n.tapSilent); n.tapSilent.connect(ctx.destination);
   n.tap.port.onmessage=e=>{ if(natOut && window.VaderNative){ try{ VaderNative.pushPcm(b64(e.data)); }catch(_){} } };
@@ -885,6 +932,7 @@ async function start(){
     if(breathSel!=='synth') startBed();
     showLatency(); keepAwake(); await listOuts(); applyOutput(); broadcastState(); startWatch(); if(window.VaderNative) VaderNative.keepAlive(true);
     setTimeout(autoCmds,400);
+    setAecLevel(aecLevel); if(aecLevel>0) setTimeout(startEchoCal,900);
   }catch(err){ failMsg(err); }finally{ starting=false; }
 }
 async function stop(){
@@ -1067,14 +1115,14 @@ function apply(id){
   const n=nodes, t=ctx.currentTime;
   switch(id){
     case 'semi': n.shift.parameters.get('ratio').setValueAtTime(Math.pow(2,v/12),t); break;
-    case 'helmet': n.combFb.gain.setTargetAtTime(v,t,0.03); n.combOut.gain.setTargetAtTime(Math.min(1,v*3),t,0.03); break;
+    case 'helmet': n.combFb.gain.setTargetAtTime(v,t,0.03); n.combOut.gain.setTargetAtTime(v<0.01?0:0.25+v,t,0.03); break;
     case 'dist': n.shaper.curve=curve(v); n.shPost.gain.setTargetAtTime(1-v*0.35,t,0.03); break;
     case 'rev': n.verbWet.gain.setTargetAtTime(v,t,0.03); break;
     case 'breathVol': n.breathVol.gain.setTargetAtTime(v,t,0.03); n.bedVol.gain.setTargetAtTime(v,t,0.03); break;
     case 'sfxVol': n.sfx.gain.setTargetAtTime(v,t,0.03); break;
     case 'voiceVol': n.voiceVol.gain.setTargetAtTime(v,t,0.03); break;
     case 'musicVol': n.musicVol.gain.setTargetAtTime(v,t,0.03); break;
-    case 'inGain': n.inGain.gain.setTargetAtTime(v,t,0.03); break;
+    case 'inGain': n.inGain.gain.setTargetAtTime(v,t,0.03); n.aec.port.postMessage({gain:v}); break;
     case 'thr': if(!breathing && !bedUp) n.gate.port.postMessage({thr:v}); break;
     case 'vol': if(running) n.master.gain.setTargetAtTime(v,t,0.03); break;
     case 'eqLow': n.eqLow.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
@@ -1087,15 +1135,16 @@ function applyAll(){ IDS.forEach(apply); }
 function eqTrim(){ if(!ctx) return; const mx=Math.max(0,+$('eqLow').value,+$('eqMid').value,+$('eqHigh').value);
   nodes.eqTrim.gain.setTargetAtTime(Math.pow(10,-mx*0.6/20),ctx.currentTime,0.05); }
 function applyPreset(name){
+  document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===name));
   Object.entries(PRESETS[name]).forEach(([k,v])=>{ $(k).value=v; apply(k); }); save();
 }
 function save(){
   try{ const s={}; IDS.forEach(id=>s[id]=$(id).value); TOGGLES.forEach(id=>s[id]=$(id).checked); s.aec=$('aec').checked; s.breathSel=breathSel;
-    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader8',JSON.stringify(s)); }catch(e){}
+    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader9',JSON.stringify(s)); }catch(e){}
   broadcastState();
 }
 function load(){
-  try{ const s=JSON.parse(localStorage.getItem('vader8')||'null'); if(!s) return;
+  try{ const s=JSON.parse(localStorage.getItem('vader9')||'null'); if(!s) return;
     IDS.forEach(id=>{ if(s[id]!=null) $(id).value=s[id]; }); TOGGLES.forEach(id=>{ if(s[id]!=null) $(id).checked=!!s[id]; });
     $('aec').checked=!!s.aec; if(s.breathSel) breathSel=s.breathSel;
     if(s.preset) document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===s.preset));
@@ -1145,6 +1194,7 @@ function setMode(m){
   $('outTools').hidden=!NATIVE_OUT || !(m==='solo'||m==='bocina');
   $('testSnd').hidden=(m==='mic');
   $('gainShow').hidden=(m==='remote');
+  $('aecBox').hidden=(m==='remote'||m==='mic');
   if(m==='remote'||m==='mic') $('outHelp').hidden=true;
   $('aecRow').hidden=!!NATIVE_IN || m!=='solo';
   $('btn').textContent=m==='remote'?'Conectar':'Encender';
@@ -1284,6 +1334,42 @@ function updChip(){
   else if(running){ if(muted){ t='Silenciado'; k='mute'; } else if(!vader){ t='Mi voz'; k='real'; } else { t='Vader activo'; k='live'; } }
   c.textContent=t; c.className='chipSt '+k;
 }
+// ---------- Anti-eco ----------
+let aecLevel=2; try{ const v=localStorage.getItem('vaderAec'); if(v!=null) aecLevel=+v; }catch(e){}
+function setAecLevel(l){ aecLevel=l; document.querySelectorAll('#aecLv .chip').forEach(c=>c.classList.toggle('sel',+c.dataset.l===l)); try{ localStorage.setItem('vaderAec',String(l)); }catch(e){}
+  if(nodes.aec) nodes.aec.port.postMessage({level:l}); }
+let calTimer=0;
+function startEchoCal(){
+  if(!ctx||!running||!nodes.aec||isCtl()) return;
+  const sr=ctx.sampleRate, n=Math.round(sr*0.25), b=ctx.createBuffer(1,n,sr), d=b.getChannelData(0); let ph=0;
+  for(let i=0;i<n;i++){ const f=300+3700*i/n; ph+=2*Math.PI*f/sr; const fade=Math.min(1,Math.min(i,n-1-i)/(sr*0.01)); d[i]=Math.sin(ph)*0.35*fade; }
+  nodes.aec.port.postMessage({level:aecLevel, gain:+$('inGain').value}); nodes.aec.port.postMessage({cal:true});
+  ramp(nodes.voiceMute.gain,0,0.01);
+  const src=ctx.createBufferSource(); src.buffer=b; src.connect(nodes.fx); src.start(ctx.currentTime+0.05);
+  $('aecInfo').textContent='Midiendo el eco…'; setStatus('Midiendo el eco… (bip)');
+  clearTimeout(calTimer); calTimer=setTimeout(()=>{ if(nodes.voiceMute) ramp(nodes.voiceMute.gain,muted?0:1,0.02); },1700);
+}
+function analyzeEcho({mic,ref}){
+  if(nodes.voiceMute) ramp(nodes.voiceMute.gain,muted?0:1,0.02);
+  const sr=ctx.sampleRate, dec=4, seg=Math.round(sr*0.25);
+  let st=ref.findIndex(v=>Math.abs(v)>0.02); if(st<0){ $('aecInfo').textContent='No se pudo medir (no sonó el bip).'; return; }
+  const down=(a,from,len)=>{ const o=new Float32Array(Math.floor(len/dec)); for(let i=0;i<o.length;i++){ let s=0; for(let j=0;j<dec;j++) s+=a[from+i*dec+j]||0; o[i]=s/dec; } return o; };
+  const c=down(ref,st,Math.min(seg,ref.length-st)), r=down(mic,st,mic.length-st);
+  let ce=0; for(const v of c) ce+=v*v;
+  const maxLag=r.length-c.length; if(maxLag<=0||ce<=0){ $('aecInfo').textContent='No se pudo medir.'; return; }
+  const corr=new Float32Array(maxLag); let best=0;
+  for(let lag=0;lag<maxLag;lag++){ let acc=0; for(let k=0;k<c.length;k++) acc+=c[k]*r[lag+k]; corr[lag]=acc; if(Math.abs(acc)>Math.abs(corr[best])) best=lag; }
+  const sorted=Array.from(corr,Math.abs).sort((a,b)=>a-b), med=sorted[sorted.length>>1]+1e-12, peak=Math.abs(corr[best]);
+  if(peak/med<6){ nodes.aec.port.postMessage({res:true,D:-1,coup:0}); $('aecInfo').textContent='No se detectó eco: tu micro casi no capta la bocina.'; setStatus('Anti-eco: no hay eco que quitar'); return; }
+  const D=best*dec, coup=Math.min(4,peak/ce);
+  nodes.aec.port.postMessage({res:true,D,coup});
+  const ms=Math.round(D/sr*1000), db=Math.round(20*Math.log10(coup));
+  $('aecInfo').textContent='Medido: la bocina tarda '+ms+' ms y el eco llega a '+db+' dB. Si mueves la bocina o cambias su volumen, vuelve a medir.';
+  setStatus('Retraso de la bocina: '+ms+' ms · anti-eco listo');
+}
+$('aecLv').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b) return; setAecLevel(+b.dataset.l); if(+b.dataset.l>0 && running) startEchoCal(); });
+$('aecCal').addEventListener('click',()=>{ if(!running){ setStatus('Primero toca Encender'); return; } if(aecLevel===0) setAecLevel(2); startEchoCal(); });
+
 // Botón grande para prender/apagar la respiración automática
 function syncBreathBtn(){ const on=$('autoBreath').checked, b=$('breathAuto'); b.textContent=on?'Respiración automática: sí':'Respiración automática: no'; b.classList.toggle('on',on); }
 $('breathAuto').addEventListener('click',()=>{ const on=!$('autoBreath').checked; $('autoBreath').checked=on; syncBreathBtn();
@@ -1295,7 +1381,7 @@ $('testSnd').addEventListener('click',()=>{ if(!running && mode!=='remote'){ set
 document.addEventListener('click',e=>{ if(e.target.closest('button,.big,.chip') && navigator.vibrate){ try{ navigator.vibrate(12); }catch(_){} } },true);
 
 // ---------- Inicio ----------
-load(); applyAll(); syncBreathBtn();
+load(); applyAll(); syncBreathBtn(); setAecLevel(aecLevel);
 let startMode=(/VaderApp/.test(navigator.userAgent)||!/Android|iPhone|iPad/i.test(navigator.userAgent))?'solo':'remote';
 try{ startMode=localStorage.getItem('vaderMode')||startMode; }catch(e){}
 setMode(startMode);
