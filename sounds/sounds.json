@@ -4,19 +4,22 @@
    "id": "b1",
    "name": "Respiración de Vader",
    "file": "sounds/b1.mp3",
-   "len": 57.54
+   "len": 57.54,
+   "gain": 0.804
   }
  ],
  "saber": {
   "file": "sounds/saber.mp3",
   "loopStart": 3.0,
-  "loopEnd": 12.4
+  "loopEnd": 12.4,
+  "gain": 0.966
  },
  "music": [
   {
    "id": "m1",
    "name": "Marcha Imperial",
-   "file": "sounds/marcha.mp3"
+   "file": "sounds/marcha.mp3",
+   "gain": 1.531
   }
  ],
  "lines": [
@@ -26,7 +29,8 @@
    "en": "I am your father",
    "group": "Frases",
    "file": "sounds/f01.mp3",
-   "dur": 3.4
+   "dur": 3.4,
+   "gain": 1.778
   },
   {
    "id": "f08",
@@ -34,7 +38,8 @@
    "en": "Join me, and together we can rule the galaxy as father and son",
    "group": "Frases",
    "file": "sounds/f08.mp3",
-   "dur": 6.1
+   "dur": 6.1,
+   "gain": 0.851
   },
   {
    "id": "f10",
@@ -42,7 +47,8 @@
    "en": "You don't know the power of the dark side",
    "group": "Frases",
    "file": "sounds/f10.mp3",
-   "dur": 4.2
+   "dur": 4.2,
+   "gain": 1.585
   },
   {
    "id": "f03",
@@ -50,7 +56,8 @@
    "en": "I find your lack of faith disturbing",
    "group": "Frases",
    "file": "sounds/f03.mp3",
-   "dur": 2.4
+   "dur": 2.4,
+   "gain": 2.63
   },
   {
    "id": "f17",
@@ -58,7 +65,8 @@
    "en": "Noooo!",
    "group": "Frases",
    "file": "sounds/f17.mp3",
-   "dur": 4.8
+   "dur": 4.8,
+   "gain": 0.891
   },
   {
    "id": "f39",
@@ -66,7 +74,8 @@
    "en": "Most impressive",
    "group": "Frases",
    "file": "sounds/f39.mp3",
-   "dur": 3.2
+   "dur": 3.2,
+   "gain": 0.923
   },
   {
    "id": "f31",
@@ -74,7 +83,8 @@
    "en": "The Force is strong with this one",
    "group": "Frases",
    "file": "sounds/f31.mp3",
-   "dur": 1.6
+   "dur": 1.6,
+   "gain": 1.567
   },
   {
    "id": "f26",
@@ -82,7 +92,8 @@
    "en": "You have failed me for the last time",
    "group": "Frases",
    "file": "sounds/f26.mp3",
-   "dur": 4.0
+   "dur": 4.0,
+   "gain": 1.245
   }
  ]
 }
