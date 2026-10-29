@@ -165,7 +165,7 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
       <button class="k" id="clash" type="button">Choque</button>
       <button class="k" id="breathNow" type="button">Respirar</button>
       <button class="k" id="musicQuick" type="button">Marcha</button>
-      <button class="k wide" id="breathAuto" type="button">Respiración automática: no</button>
+      <button class="k wide" id="breathAuto" type="button">Respiración continua: no</button>
     </div>
     <h2>Frases</h2>
     <div class="pad" id="phrases"></div>
@@ -232,6 +232,16 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
       <div class="chips" id="presets"><button class="chip sel" data-p="clasico" type="button">Clásico</button><button class="chip" data-p="grave" type="button">Más grave</button><button class="chip" data-p="metal" type="button">Casco metálico</button><button class="chip" data-p="clara" type="button">Clara</button></div>
     </section>
 
+    <section id="volSec">
+      <h2>Volúmenes (0 a 100%)</h2>
+      <p class="help">Al 100% todo suena al mismo nivel. Ajusta cada uno y así se queda guardado.</p>
+      <div class="vrow"><span>Mi voz</span><button type="button" data-step="voiceVol:-0.1">−</button><input id="voiceVol" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volumen de la voz"><button type="button" data-step="voiceVol:0.1">+</button><output id="voiceVolO"></output></div>
+      <div class="vrow"><span>Frases y efectos</span><button type="button" data-step="sfxVol:-0.1">−</button><input id="sfxVol" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volumen de efectos"><button type="button" data-step="sfxVol:0.1">+</button><output id="sfxVolO"></output></div>
+      <div class="vrow"><span>Música</span><button type="button" data-step="musicVol:-0.1">−</button><input id="musicVol" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volumen de música"><button type="button" data-step="musicVol:0.1">+</button><output id="musicVolO"></output></div>
+      <div class="vrow"><span>Respiración</span><button type="button" data-step="breathVol:-0.1">−</button><input id="breathVol" type="range" min="0" max="1" step="0.05" value="0.8" aria-label="Volumen de respiración"><button type="button" data-step="breathVol:0.1">+</button><output id="breathVolO"></output></div>
+      <div class="vrow"><span>General <small>(todo junto)</small></span><button type="button" data-step="vol:-0.1">−</button><input id="vol" type="range" min="0" max="1" step="0.05" value="1" aria-label="Volumen general"><button type="button" data-step="vol:0.1">+</button><output id="volO"></output></div>
+    </section>
+
     <section id="cmdSec">
       <h2>Comandos de voz</h2>
       <label class="check"><input id="voiceCmd" type="checkbox"> Activar comandos de voz</label>
@@ -249,13 +259,8 @@ details ul{margin:0;padding-left:20px;color:var(--mute);font-size:15px;display:f
     <details id="moreSec">
       <summary>Más ajustes</summary>
       <div class="inner">
-        <div class="vrow"><span>Volumen de mi voz</span><button type="button" data-step="voiceVol:-0.1">−</button><input id="voiceVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de la voz"><button type="button" data-step="voiceVol:0.1">+</button><output id="voiceVolO"></output></div>
-        <div class="vrow"><span>Efectos y frases</span><button type="button" data-step="sfxVol:-0.1">−</button><input id="sfxVol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen de efectos"><button type="button" data-step="sfxVol:0.1">+</button><output id="sfxVolO"></output></div>
-        <div class="vrow"><span>Música</span><button type="button" data-step="musicVol:-0.1">−</button><input id="musicVol" type="range" min="0" max="2" step="0.05" value="0.8" aria-label="Volumen de música"><button type="button" data-step="musicVol:0.1">+</button><output id="musicVolO"></output></div>
-        <div class="vrow"><span>Respiración</span><button type="button" data-step="breathVol:-0.1">−</button><input id="breathVol" type="range" min="0" max="2" step="0.05" value="0.7" aria-label="Volumen de respiración"><button type="button" data-step="breathVol:0.1">+</button><output id="breathVolO"></output></div>
-        <div class="vrow"><span>Volumen general</span><button type="button" data-step="vol:-0.1">−</button><input id="vol" type="range" min="0" max="2" step="0.05" value="1" aria-label="Volumen general"><button type="button" data-step="vol:0.1">+</button><output id="volO"></output></div>
         <label class="check"><input id="autoBreath" type="checkbox"> Respirar solo cuando me callo</label>
-        <label class="check"><input id="duckMusic" type="checkbox" checked> Bajar la música cuando hablo</label>
+        <label class="check"><input id="duckMusic" type="checkbox"> Bajar un poco la música cuando hablo</label>
         <div id="musicBox" hidden><h2>Música</h2><div class="pad" id="musicList"></div></div>
         <label class="check" id="aecRow"><input id="aec" type="checkbox"> Cancelación de eco (activa modo llamada)</label>
         <h2>Ayuda</h2>
@@ -416,6 +421,7 @@ const fmt={
   eqLow:v=>(v>0?'+':'')+v+' dB', eqMid:v=>(v>0?'+':'')+v+' dB', eqHigh:v=>(v>0?'+':'')+v+' dB'
 };
 const IDS=Object.keys(fmt);
+const MASTER_REF=1.25; // 100% general = salida fuerte (el limitador evita que se sature)
 const TOGGLES=['autoBreath','duckMusic'];
 function setStatus(t){ $('status').textContent=t; }
 const isCtl=()=>mode==='remote'||mode==='mic';
@@ -501,9 +507,13 @@ async function loadManifest(){
   try{ const r=await fetch('sounds/sounds.json',{cache:'no-cache'}); man=await r.json(); }catch(e){ man={breaths:[],music:[],lines:[],saber:null}; }
   renderLibrary();
 }
+// cada sonido trae su ganancia (medida) para que al 100% todo suene al mismo nivel
+function fileGain(file){ const all=[...man.lines,...man.music,...man.breaths,man.saber].filter(Boolean); const x=all.find(o=>o.file===file); return x&&x.gain?x.gain:1; }
 async function getBuf(file){
   if(bufs[file]) return bufs[file];
-  const p=(async()=>{ const r=await fetch(file); return await ctx.decodeAudioData(await r.arrayBuffer()); })();
+  const p=(async()=>{ const r=await fetch(file); const b=await ctx.decodeAudioData(await r.arrayBuffer());
+    const gn=fileGain(file); if(gn!==1){ for(let c=0;c<b.numberOfChannels;c++){ const d=b.getChannelData(c); for(let i=0;i<d.length;i++) d[i]*=gn; } }
+    return b; })();
   bufs[file]=p; try{ return await p; }catch(e){ delete bufs[file]; throw e; }
 }
 async function loadBuffers(){
@@ -555,17 +565,17 @@ async function toggleMusic(id){
   s.onended=()=>{ if(music===s){ music=null; musicId=null; syncLibraryUI(); broadcastState(); } };
 }
 function stopMusic(){ musicReq++; if(music){ try{ music.stop(); }catch(e){} } music=null; musicId=null; syncLibraryUI(); broadcastState(); }
-let bedReq=0;
+let bedReq=0, bedStarting=false;
 async function startBed(){
   stopBed(); const my=++bedReq;
   const b=man.breaths.find(x=>x.id===breathSel); if(!b || !ctx) return;
-  let buf; try{ buf=await getBuf(b.file); }catch(e){ return; }
-  if(my!==bedReq||!running) return;
+  bedStarting=true; let buf; try{ buf=await getBuf(b.file); }catch(e){ bedStarting=false; return; }
+  bedStarting=false; if(my!==bedReq||!running) return;
   const s=ctx.createBufferSource(); s.buffer=buf; s.loop=true; s.connect(nodes.bedDuck); s.start();
   bed=s; bedUp=false; nodes.bedDuck.gain.value=0;
 }
 function stopBed(){ bedReq++; if(bed){ try{ bed.stop(); }catch(e){} bed=null; } bedUp=false; if(nodes.bedDuck) nodes.bedDuck.gain.value=0; gateThr(false); }
-function gateThr(raised){ const thr=+$('thr').value; nodes.gate && nodes.gate.port.postMessage({thr: raised?Math.min(-10,thr+14):thr}); }
+function gateThr(raised){ const thr=+$('thr').value; nodes.gate && nodes.gate.port.postMessage({thr: raised?Math.min(-10,thr+8):thr}); }
 function setBed(up){
   if(!bed || up===bedUp) return;
   bedUp=up; ramp(nodes.bedDuck.gain, up?1:0, up?0.25:0.04);
@@ -582,15 +592,21 @@ function onLevel({lvl,open}){
   const now=performance.now(), t=ctx.currentTime;
   if(open) lastVoice=now;
   const talking=open && !muted;
-  if($('duckMusic').checked) ramp(nodes.musicDuck.gain, talking?0.25:1, talking?0.05:0.4);
+  if($('duckMusic').checked) ramp(nodes.musicDuck.gain, talking?0.55:1, talking?0.08:0.4); else nodes.musicDuck.gain.value=1;
   if(breathSel==='synth'){
     nodes.breathBus.gain.setTargetAtTime(open?0:1, t, open?0.04:0.15);
     if($('autoBreath').checked && !breathing && !saber && now-lastVoice>1500) breath();
   } else {
-    const want=(now<forceBedUntil) || ($('autoBreath').checked && now-lastVoice>900);
-    setBed(open && now>=forceBedUntil ? false : want);
+    // respiración continua: se calla en cuanto hablas (≈0.1 s de voz) y vuelve 1 s después de que te callas.
+    // Mientras respira pide la voz un poco más fuerte, para que su propio sonido en la bocina no la corte.
+    const thrDb=+$('thr').value+(bedUp?8:0), isTalk=open && db>thrDb;
+    talkCnt=isTalk?talkCnt+1:0; if(talkCnt>=3) lastTalk=now;
+    const want=(now<forceBedUntil) || ($('autoBreath').checked && now-lastTalk>1000);
+    if(want && !bed && !bedStarting && running) startBed();
+    setBed(talkCnt>=3 && now>=forceBedUntil ? false : want);
   }
 }
+let talkCnt=0, lastTalk=0;
 
 // ---------- Respiración sintética ----------
 function puff(t,f0,f1,q,peak,rise,sus,fall){
@@ -717,7 +733,7 @@ function setMuted(m){
   $('muteBtn').classList.toggle('on',m); $('muteBtn').textContent=m?'Activar voz':'Silenciar';
   updChip(); broadcastState();
 }
-function stepVol(d){ const v=Math.max(0,Math.min(2,Math.round((+$('vol').value+d)*20)/20)); $('vol').value=v; apply('vol'); save(); }
+function stepVol(d){ const v=Math.max(0,Math.min(1,Math.round((+$('vol').value+d)*20)/20)); $('vol').value=v; apply('vol'); save(); }
 function stopAll(){
   lineReq++; if(lineSrc){ try{ lineSrc.stop(); }catch(e){} } stopMusic(); if(saber) toggleSaber(); forceBedUntil=0;
 }
@@ -926,7 +942,7 @@ async function start(){
     if(!ctx) await build();
     await ctx.resume();
     if(mode==='solo'){ await openMic(); openReceiver().catch(()=>{}); } else await openReceiver();
-    nodes.master.gain.setTargetAtTime(+$('vol').value, ctx.currentTime, 0.05);
+    nodes.master.gain.setTargetAtTime(+$('vol').value*MASTER_REF, ctx.currentTime, 0.05);
     running=true; setBtn(true);
     if(mode==='solo') setStatus('Activo. Habla.');
     if(breathSel!=='synth') startBed();
@@ -1124,7 +1140,7 @@ function apply(id){
     case 'musicVol': n.musicVol.gain.setTargetAtTime(v,t,0.03); break;
     case 'inGain': n.inGain.gain.setTargetAtTime(v,t,0.03); n.aec.port.postMessage({gain:v}); break;
     case 'thr': if(!breathing && !bedUp) n.gate.port.postMessage({thr:v}); break;
-    case 'vol': if(running) n.master.gain.setTargetAtTime(v,t,0.03); break;
+    case 'vol': if(running) n.master.gain.setTargetAtTime(v*MASTER_REF,t,0.03); break;
     case 'eqLow': n.eqLow.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
     case 'eqMid': n.eqMid.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
     case 'eqHigh': n.eqHigh.gain.setTargetAtTime(v,t,0.03); eqTrim(); break;
@@ -1140,11 +1156,11 @@ function applyPreset(name){
 }
 function save(){
   try{ const s={}; IDS.forEach(id=>s[id]=$(id).value); TOGGLES.forEach(id=>s[id]=$(id).checked); s.aec=$('aec').checked; s.breathSel=breathSel;
-    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader9',JSON.stringify(s)); }catch(e){}
+    s.preset=(document.querySelector('#presets .chip.sel')||{dataset:{}}).dataset.p; localStorage.setItem('vader10',JSON.stringify(s)); }catch(e){}
   broadcastState();
 }
 function load(){
-  try{ const s=JSON.parse(localStorage.getItem('vader9')||'null'); if(!s) return;
+  try{ const s=JSON.parse(localStorage.getItem('vader10')||'null'); if(!s) return;
     IDS.forEach(id=>{ if(s[id]!=null) $(id).value=s[id]; }); TOGGLES.forEach(id=>{ if(s[id]!=null) $(id).checked=!!s[id]; });
     $('aec').checked=!!s.aec; if(s.breathSel) breathSel=s.breathSel;
     if(s.preset) document.querySelectorAll('#presets .chip').forEach(c=>c.classList.toggle('sel',c.dataset.p===s.preset));
@@ -1371,10 +1387,10 @@ $('aecLv').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!
 $('aecCal').addEventListener('click',()=>{ if(!running){ setStatus('Primero toca Encender'); return; } if(aecLevel===0) setAecLevel(2); startEchoCal(); });
 
 // Botón grande para prender/apagar la respiración automática
-function syncBreathBtn(){ const on=$('autoBreath').checked, b=$('breathAuto'); b.textContent=on?'Respiración automática: sí':'Respiración automática: no'; b.classList.toggle('on',on); }
+function syncBreathBtn(){ const on=$('autoBreath').checked, b=$('breathAuto'); b.textContent=on?'Respiración continua: sí':'Respiración continua: no'; b.classList.toggle('on',on); }
 $('breathAuto').addEventListener('click',()=>{ const on=!$('autoBreath').checked; $('autoBreath').checked=on; syncBreathBtn();
   if(isCtl()){ send({t:'set',id:'autoBreath',v:on}); return; }
-  if(!on){ forceBedUntil=0; if(bed) setBed(false); } save(); toast(on?'Respiración: sí':'Respiración: no'); });
+  if(!on){ forceBedUntil=0; if(bed) setBed(false); } else { lastTalk=0; if(running && !bed) startBed(); } save(); toast(on?'Respiración: sí':'Respiración: no'); });
 $('autoBreath').addEventListener('change',()=>{ syncBreathBtn(); if(!$('autoBreath').checked && bed){ forceBedUntil=0; setBed(false); } });
 $('testSnd').addEventListener('click',()=>{ if(!running && mode!=='remote'){ setStatus('Primero toca Encender, luego Probar sonido.'); return; } runCmd('line',TEST_LINE); setStatus('Probando: debe sonar "Muy impresionante" por la bocina'); });
 // Vibración corta al tocar (confirma sin mirar)
